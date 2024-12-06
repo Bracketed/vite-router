@@ -1,5 +1,5 @@
-import chokidar from 'chokidar';
-import debounce from 'debounce';
+import chokidar, { FSWatcher } from 'chokidar';
+import debounce, { DebouncedFunction } from 'debounce';
 import fs from 'node:fs';
 import path from 'node:path';
 import { PluginOption } from 'vite';
@@ -9,8 +9,8 @@ import type { Options } from './types/Exports';
 
 class ViteRouter {
 	private readonly configuration: Options;
-	private readonly watcher: chokidar.FSWatcher;
-	private readonly generate: debounce.DebouncedFunction<() => Promise<void>>;
+	private readonly watcher: FSWatcher;
+	private readonly generate: DebouncedFunction<() => Promise<void>>;
 
 	constructor(props: Partial<Options> = {}) {
 		this.configuration = this.configureDefaults(props);
@@ -72,3 +72,4 @@ class ViteRouter {
 }
 
 export { ViteRouter };
+

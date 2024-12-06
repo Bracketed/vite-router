@@ -33,6 +33,6 @@ jobs:
                           run: yarn build
 
                         - name: Publish to NPM
-                          run: yarn npm publish --access public --no-git-checks
+                          run: yarn npm publish --access public
                           env:
                                   NODE_AUTH_TOKEN: ${{ secrets.NODE_PUBLISH }}
