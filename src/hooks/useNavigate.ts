@@ -1,5 +1,5 @@
-import { useNavigate as useRRDNavigate } from "react-router-dom";
-import type { Routes } from "./routes";
+import { useNavigate as useRRDNavigate } from 'react-router-dom';
+import type { Routes } from './routes';
 
 type Options<T extends keyof Routes> = Routes[T] extends null
 	? { params?: Record<string, string> }
@@ -8,10 +8,7 @@ type Options<T extends keyof Routes> = Routes[T] extends null
 export function useNavigate() {
 	const navigate = useRRDNavigate();
 
-	function customNavigate<T extends keyof Routes>(
-		path: T,
-		options?: Options<T>,
-	) {
+	function customNavigate<T extends keyof Routes>(path: T, options?: Options<T>) {
 		let formattedPath = path as string;
 
 		if (options) {
@@ -23,17 +20,15 @@ export function useNavigate() {
 				if (options[key as keyof typeof options]) {
 					formattedPath = formattedPath.replace(
 						param,
-						options[key as keyof typeof options] as string,
+						options[key as keyof typeof options] as string
 					);
 				}
 			}
 		}
 
-		const queryParams = options?.params
-			? new URLSearchParams(options.params).toString()
-			: "";
+		const queryParams = options?.params ? new URLSearchParams(options.params).toString() : '';
 
-		formattedPath += queryParams ? `?${queryParams}` : "";
+		formattedPath += queryParams ? `?${queryParams}` : '';
 
 		return navigate(formattedPath);
 	}

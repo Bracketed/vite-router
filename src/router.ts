@@ -1,43 +1,74 @@
-import chokidar from "chokidar";
-import debounce from "debounce";
-import fs from "node:fs";
-import type { PluginOption } from "vite";
-import { configureDefaults } from "./defaults";
-import { generateRoutes } from "./generator";
-import type { RouterProps } from "./types";
+import chokidar from 'chokidar';
+import debounce from 'debounce';
+import fs from 'node:fs';
+import path from 'node:path';
+import { PluginOption } from 'vite';
+import { RouteGenerator } from './generator';
+import { Logger } from './logger';
+import type { Options } from './types/Exports';
 
-export function ViteRouter(props: Partial<RouterProps> = {}): PluginOption {
-	const config = configureDefaults(props);
+class ViteRouter {
+	private readonly configuration: Options;
+	private readonly watcher: chokidar.FSWatcher;
+	private readonly generate: debounce.DebouncedFunction<() => Promise<void>>;
 
-	const watcher = chokidar.watch(config.dir);
-	const generator = debounce(generateRoutes, 100);
+	constructor(props: Partial<Options> = {}) {
+		this.configuration = this.configureDefaults(props);
 
-	// checks if dir and output exists
-	if (!fs.existsSync(config.output)) {
-		throw new Error("ERR: The output file does not exist");
+		this.watcher = chokidar.watch(this.configuration.dir);
+		this.generate = debounce(new RouteGenerator(this.configuration).generate, 100);
 	}
 
-	if (!fs.existsSync(config.dir)) {
-		throw new Error("ERR: The pages directory does not exist");
-	}
+	private readonly configureDefaults = (props: Partial<Options> = {}) => {
+		// Defines default values
+		props.dir ??= 'src/app';
+		props.output ??= 'src/Router.tsx';
+		props.extensions ??= ['.tsx', '.ts', '.jsx', '.js'];
+		props.layouts ??= ['layout.tsx', 'layout.jsx', 'Layout.tsx', 'Layout.jsx'];
+		props.meta ??= [
+			'.meta.json',
+			'.page.json',
+			'.info.json',
+			'.information.json',
+			'.config.json',
+			'.configuration.json',
+			'.rc.json',
+			'.json',
+			'.props.json',
+			'.properties.json',
+		];
+		props.router ??= 'BrowserRouter';
+		props.root ??= process.cwd();
 
-	return {
-		name: "vite-plugin-router",
+		// Makes sure the paths are absolute
+		props.dir = path.resolve(props.root, props.dir);
+		props.output = path.resolve(props.root, props.output);
 
-		enforce: "pre",
+		return props as Options;
+	};
 
-		configureServer() {
-			watcher.on("add", () => generator(config));
-			watcher.on("unlink", () => generator(config));
+	public readonly affix = (): PluginOption => {
+		const Constructors = this;
 
-			watcher.on("ready", () => {
-				console.info("Vite router is ready");
-				console.info(`Watching at (${config.dir})`);
-			});
-		},
+		if (!fs.existsSync(this.configuration.output)) throw new Error('ERR: The output file does not exist');
+		if (!fs.existsSync(this.configuration.dir)) throw new Error('ERR: The pages directory does not exist');
 
-		closeBundle() {
-			return watcher.close();
-		},
+		return {
+			name: 'vite-plugin-router',
+			enforce: 'pre',
+
+			closeBundle: () => Constructors.watcher.close(),
+			configureServer: () => {
+				Constructors.watcher.on('add', () => Constructors.generate());
+				Constructors.watcher.on('unlink', () => Constructors.generate());
+
+				Constructors.watcher.on('ready', () => {
+					Logger.info('Vite router is ready');
+					Logger.info(`Watching at (${Constructors.configuration.dir})`);
+				});
+			},
+		};
 	};
 }
+
+export { ViteRouter };

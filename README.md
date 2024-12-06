@@ -1,48 +1,71 @@
-# vite-plugin-router
+<div align="center" id="top">
+    <img src="https://raw.githubusercontent.com/Bracketed/Bracketed-Packages/main/assets/LogoText.png" alt="Bracketed logo" width="800"/>
+    <br />
+    Bracketed Softworks - <a href="https://bracketed.co.uk" >Website</a> | <a href="https://discord.com/invite/JZ4939cvMT" >Discord</a> | <a href="https://github.com/Bracketed" >Github</a>
+</div>
 
-[![npm version](https://badgen.net/npm/v/vite-plugin-router)](https://www.npmjs.com/package/vite-plugin-router)
-[![monthly downloads](https://badgen.net/npm/dm/vite-plugin-router)](https://www.npmjs.com/package/vite-plugin-router)
-[![types](https://badgen.net/npm/types/vite-plugin-router)](https://github.com/felipe-bergamaschi/vite-router/blob/main/src/types.ts)
-[![license](https://badgen.net/npm/license/vite-plugin-router)](https://github.com/felipe-bergamaschi/vite-router/blob/main/LICENSE)
+<br>
 
-> File system routing for React + Typescript applications using
-> [Vite](https://github.com/vitejs/vite)
+<h2 align="center" >@bracketed/vite-plugin-router</h2>
 
-## Getting Started
+A fork of [vite-plugin-router](https://github.com/felipe-bergamaschi/vite-router) by Felipe Bergamaschi, enhanced to work with slightly more advanced methods, such as having meta files which can add extra props to your Route components.
+This is a plugin built revolving around [Vite](https://vite.dev/) to allow the ease of a fast, comprehensive and facilitative Router system in your Vite + React + Typescript/JavaScript applications.
 
-### React
+**NOTICE:** Does not support versions below react-router v6
 
-> Does not support versions below react-router v6
+<h2>Summary (Directory)</h2>
 
-#### Install:
+- [Installation](#Installation)
+     <!--truncate-->
+     - [Yarn](#YarnInstall)
+     - [Npm](#NpmInstall)
+     - [Vite](#ViteInstall)
+- [Usage](#Usage)
+- [Contribution](#Contribution)
+- [Licence](#Licence)
 
-```bash
-npm install -D vite-plugin-router
+<h2 id="Installation">Installation</h2>
+
+Install via `yarn` or `npm`:
+
+<p id="YarnInstall">Yarn:</p>
+
+```sh
+yarn install -D @bracketed/vite-plugin-router
+yarn install react-router react-router-dom
+```
+
+<p id="NpmInstall">Npm:</p>
+
+```sh
+npm install -D @bracketed/vite-plugin-router
 npm install react-router react-router-dom
 ```
 
-### Vite config
+<p id="NpmInstall">Update Vite config</p>
 
 Add to your `vite.config.js`:
 
 ```js
-import Routes from 'vite-plugin-router';
+import Routes from '@bracketed/vite-plugin-router';
 
 export default {
-  plugins: [
-    // ...
-    Routes()
-  ]
+	plugins: [
+		// ...
+		new ViteRouter().affix(),
+	],
 };
 ```
 
-## Overview
+<h2 id="Usage">Usage</h2>
 
-By default, vite-plugin-router creates a route file in the `src/` directory containing all
+By default, @bracketed/vite-plugin-router creates a route file in the `src/` directory containing all
 the route settings for your application, while observing the files within `src/app`.
 
 Routes are configured using the [Suspense API](https://react.dev/reference/react/Suspense)
 of `react-router` by default.
+
+This package also exports its typings via `@bracketed/vite-plugin-router/types` and its hooks via `@bracketed/vite-plugin-router/hooks`.
 
 ### React
 
@@ -51,11 +74,11 @@ an example:
 
 ```js
 export default function Page() {
-  return (
-    <div>
-      <h1>Vite Router</h1>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Vite Router</h1>
+		</div>
+	);
 }
 ```
 
@@ -84,17 +107,24 @@ To use custom configuration, pass your options to Pages when instantiating the p
 ```js
 // vite.config.js
 import { defineConfig } from 'vite';
-import Routes from 'vite-plugin-router';
+import Routes from '@bracketed/vite-plugin-router';
 
 export default defineConfig({
-  plugins: [
-    Routes({
-      dir: 'src/app',
-      outDir: 'src'
-    })
-  ]
+	plugins: [
+		new ViteRouter().affix({
+			dir: 'src/app',
+			output: 'src',
+		}),
+	],
 });
 ```
+
+### root
+
+- **Type:** `string`
+- **Default:** `process`
+
+The project pwd by default, where your project is currently.
 
 ### dir
 
@@ -103,32 +133,46 @@ export default defineConfig({
 
 Path to the pages directory.
 
-### outDir
+### output
 
 - **Type:** `string`
 - **Default:** `'src'`
 
-Output path for the `routes` file.
+Output path for the `Routes` file.
+
+### router
+
+- **Default:**
+     - `BrowserRouter`
+
+Chooses the router to be used.
+
+### layouts
+
+- **Default:**
+     - `['layout.tsx', 'layout.jsx']`
 
 ### extensions
 
 - **Default:**
-  - `['tsx', 'jsx', 'ts', 'js']`
+     - `['tsx', 'jsx', 'ts', 'js']`
 
-### ignore files
+The types of files the router will search for.
+
+### meta
 
 - **Default:**
-  - `[style.*, *.css]` An array of glob patterns to ignore matches.
+     - `['.meta.json', '.page.json', '.info.json', '.information.json', '.config.json', '.configuration.json', '.rc.json', '.json', '.props.json', 'properties.json',]`
 
-```bash
-# folder structure
-src/app/
-    ├── admin/
-    │  └── index.tsx
-    │  └── index.css
-    └── index.tsx
-    └── style.ts
-```
+The types of meta the router will search for so extra props can be added to Route components.
+
+### onRoutesGenerated
+
+- **Default:**
+     - `void` (none)
+
+A function to call upon the generation of the route handler.
+Parameters: (`Array<Route>`)
 
 ## File System Routing
 
@@ -181,35 +225,23 @@ src/app/
     └── index.tsx
 ```
 
-## 🚀 New features
-
-Our application is in a constant state of evolution, and our team is dedicated to bringing
-you numerous improvements and exciting new features that will enhance its power and
-user-friendliness. Below, we present a glimpse of some of the features we are actively
-developing:
-
-### 🚧 Catch-all Routes
-
-Catch-all routes are denoted with square brackets containing an ellipsis:
-
-- `src/app/[...all].tsx` -> `/*` (`/non-existent-page`)
-
-The text after the ellipsis will be used both to name the route, and as the name of the
-prop in which the route parameters are passed.
-
-### 🚧 Custom error 404
-
-Create custom 404 routes tailored to each directory.
-
-```
-src/app/
-    ├── users/
-    │  ├── index.tsx
-    │  ├── layout.tsx
-    │  └── 404.tsx
-    └── index.tsx
-```
-
-## License
+<h2 id="Licence">Licence</h2>
 
 MIT License © 2023-PRESENT [Felipe Bergamaschi](https://github.com/felipe-bergamaschi)
+This package is a fork of `vite-plugin-router` by Felipe Bergamaschi, all rights reserved to respected contributors.
+
+<h1 id="Contribution">Contribution & Help</h1>
+
+Feel free to contribute to this project, join our [discord](https://discord.com/invite/JZ4939cvMT) and help us with future developments of Project Bracketed & Packages by Bracketed Softworks.
+Please also notify us of errors within our projects as we may not be aware of them at the time.
+
+<br>
+
+<div align="center" style="font-weight: bold">
+    <h2>Thanks for using our packages!</h2>
+    <img src="https://github.com/Bracketed/Branding/blob/main/Banners/LogoBannerTextMini.png?raw=true" alt="Bracketed logo" width="900" style="border-radius: 25px" />
+    Bracketed Softworks - <a href="https://bracketed.co.uk" >Website</a> | <a href="https://discord.com/invite/JZ4939cvMT" >Discord</a> | <a href="https://github.com/Bracketed" >Github</a> | <a href="https://x.com/teambracketed" >Twitter</a> | <a href="#top" >Back To The Top</a>
+    <br>
+    <br>
+    <img src="https://discordapp.com/api/guilds/1041758035355369542/widget.png?style=banner2" alt="Discord Banner" href="https://discord.com/invite/JZ4939cvMT"/>
+</div>

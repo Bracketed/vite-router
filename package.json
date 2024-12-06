@@ -1,38 +1,48 @@
 {
-	"name": "vite-plugin-router",
-	"version": "0.3.10",
+	"name": "@bracketed/vite-plugin-router",
+	"version": "1.0.0",
 	"description": "File system router for React applications using Vite.",
-	"keywords": ["vite", "plugin", "router"],
-	"homepage": "https://github.com/felipe-bergamaschi/vite-router#readme",
-	"bugs": "https://github.com/felipe-bergamaschi/vite-router/issues",
-	"repository": "https://github.com/felipe-bergamaschi/vite-router.git",
+	"keywords": [
+		"vite",
+		"plugin",
+		"router"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"homepage": "https://github.com/ninjaninja140/vite-router#readme",
+	"bugs": "https://github.com/ninjaninja140/vite-router/issues",
+	"repository": "https://github.com/ninjaninja140/vite-router.git",
 	"license": "MIT",
-	"author": "Felipe Bergamaschi <midisoft.corporation@gmail.com>",
-	"contributors": ["Arthur Fiorette <me@arthur.place>"],
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"author": "@bracketed",
+	"contributors": [
+		"Eden Kneale <https://github.com/ninjaninja140>",
+		"Felipe Bergamaschi <midisoft.corporation@gmail.com>",
+		"Arthur Fiorette <me@arthur.place>"
+	],
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
 	"scripts": {
 		"build": "tsc",
-		"format": "prettier --write .",
-		"lint": "prettier --check .",
 		"test": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@types/react": "^18.2.74",
+		"chalk": "^5.3.0",
 		"chokidar": "^3.6.0",
+		"colorette": "^2.0.20",
 		"debounce": "^2.0.0",
-		"qs": "^6.12.1",
 		"tslib": "^2.6.2"
 	},
 	"devDependencies": {
-		"@arthurfiorette/prettier-config": "^1.0.12",
-		"@biomejs/biome": "1.7.1",
 		"@types/debounce": "^1.2.4",
 		"@types/node": "^20.12.2",
-		"@types/qs": "^6.9.15",
-		"prettier": "^3.2.5",
+		"react": "^18.0.0",
+		"react-dom": "^18.0.0",
+		"react-router-dom": "^6.0.0",
 		"rollup": "^4.13.2",
-		"typescript": "^5.4.3"
+		"typescript": "^5.4.3",
+		"vite": "^5.0.0"
 	},
 	"peerDependencies": {
 		"react": "^18.0.0",
@@ -40,9 +50,28 @@
 		"react-router-dom": "^6.0.0",
 		"vite": "^5.0.0"
 	},
-	"packageManager": "pnpm@9.0.1",
 	"engines": {
 		"node": ">=12"
 	},
-	"files": ["dist/**/*"]
+	"files": [
+		"lib/**/*"
+	],
+	"exports": {
+		".": {
+			"types": "./lib/index.d.ts",
+			"require": "./lib/index.js",
+			"import": "./lib/index.js"
+		},
+		"./hooks": {
+			"types": "./lib/hooks/index.d.ts",
+			"require": "./lib/hooks/index.js",
+			"import": "./lib/hooks/index.js"
+		},
+		"./types": {
+			"types": "./lib/types/Exports.d.ts",
+			"require": "./lib/types/Exports.js",
+			"import": "./lib/types/Exports.js"
+		}
+	},
+	"packageManager": "yarn@4.5.3"
 }
