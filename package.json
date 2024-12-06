@@ -10,9 +10,13 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"homepage": "https://github.com/ninjaninja140/vite-router#readme",
-	"bugs": "https://github.com/ninjaninja140/vite-router/issues",
-	"repository": "https://github.com/ninjaninja140/vite-router.git",
+	"bugs": {
+		"url": "https://github.com/ninjaninja140/vite-router/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ninjaninja140/vite-router"
+	},
 	"license": "MIT",
 	"author": "@bracketed",
 	"contributors": [
