@@ -166,6 +166,21 @@ The types of files the router will search for.
 
 The types of meta the router will search for so extra props can be added to Route components.
 
+### redirects
+
+- **Default:**
+     - `{}`
+
+Redirect routes in your application.
+Formatted as this example:
+
+```json
+{
+	"redirects/discord": "https://discord.com",
+	"discord": "https://discord.com"
+}
+```
+
 ### onRoutesGenerated
 
 - **Default:**
