@@ -1,6 +1,6 @@
 {
 	"name": "@bracketed/vite-plugin-router",
-	"version": "1.1.3",
+	"version": "1.1.4",
 	"description": "File system router for React applications using Vite.",
 	"keywords": [
 		"vite",
@@ -11,11 +11,11 @@
 		"access": "public"
 	},
 	"bugs": {
-		"url": "https://github.com/ninjaninja140/vite-router/issues"
+		"url": "https://github.com/bracketed/vite-router/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ninjaninja140/vite-router"
+		"url": "https://github.com/bracketed/vite-router"
 	},
 	"license": "MIT",
 	"author": "@bracketed",
