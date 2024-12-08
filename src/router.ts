@@ -24,6 +24,7 @@ class ViteRouter {
 		props.dir ??= 'src/app';
 		props.output ??= 'src/Router.tsx';
 		props.extensions ??= ['.tsx', '.ts', '.jsx', '.js'];
+		props.redirects ??= {};
 		props.layouts ??= ['layout.tsx', 'layout.jsx', 'Layout.tsx', 'Layout.jsx'];
 		props.meta ??= [
 			'.meta.json',
@@ -72,4 +73,3 @@ class ViteRouter {
 }
 
 export { ViteRouter };
-

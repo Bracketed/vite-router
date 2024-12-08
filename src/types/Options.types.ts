@@ -37,6 +37,13 @@ export interface Options {
 	meta: string[];
 
 	/**
+	 * Utilise redirects in your application.
+	 *
+	 * @default []
+	 */
+	redirects: Record<string, string>;
+
+	/**
 	 * Matches all layout files
 	 *
 	 * @default ['layout.tsx', 'layout.jsx']

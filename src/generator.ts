@@ -5,6 +5,7 @@ import { Hooks } from './hooks';
 import { Logger } from './logger';
 import type { Layout, Options, Route } from './types/Exports';
 import { readMeta } from './utilities/GetMeta';
+import { sanitise } from './utilities/Sanitise';
 import { walk } from './utilities/Walk';
 
 export class RouteGenerator {
@@ -15,17 +16,19 @@ export class RouteGenerator {
 	/** Record<directory, fullPath> */
 	private readonly layouts: Record<string, Layout> = {};
 	private readonly routes: Route[] = [];
+	private readonly redirects: Record<string, string>;
 
 	private index: number = 0;
 
 	constructor(props: Options) {
 		this.paths = walk(props.dir);
 		this.props = props;
+		this.redirects = props.redirects;
 	}
 
 	public readonly generate = async (): Promise<void> => {
 		for await (const filepath of this.paths) {
-			const { base, name, ext, dir } = path.parse(filepath);
+			let { base, name, ext, dir } = path.parse(filepath);
 
 			// TODO: Remove this line
 			if (name === 'styles') continue;
@@ -33,12 +36,30 @@ export class RouteGenerator {
 			// full relative path without extension
 			const relative =
 				// typescript always uses / as path separator
-				`./${path.relative(path.dirname(this.props.output), filepath).slice(undefined, -ext.length)}`;
+				`./${path
+					.relative(path.dirname(this.props.output), filepath)
+					.slice(undefined, -ext.length)}`;
 
 			// Isn't a file route
 			if (!this.props.extensions.includes(ext)) continue;
 
 			const Meta = await readMeta(this.props, filepath);
+
+			if (Meta && Meta['$route'])
+				if (typeof Meta['$route'] === 'string') name = sanitise(Meta['$route']);
+				else Logger.error('$route in Meta files can only be a string.');
+
+			if (Meta && Meta['$Route'])
+				if (typeof Meta['$Route'] === 'string') name = sanitise(Meta['$Route']);
+				else Logger.error('$Route in Meta files can only be a string.');
+
+			if (Meta && Meta['$location'])
+				if (typeof Meta['$location'] === 'string') name = sanitise(Meta['$location']);
+				else Logger.error('$location in Meta files can only be a string.');
+
+			if (Meta && Meta['$Location'])
+				if (typeof Meta['$Location'] === 'string') name = sanitise(Meta['$Location']);
+				else Logger.error('$Location in Meta files can only be a string.');
 
 			if (
 				(name.startsWith('[') && !name.endsWith(']')) ||
@@ -46,7 +67,10 @@ export class RouteGenerator {
 			) {
 				// Checks if the filename is not [id]something.ext
 				Logger.error(
-					`ERR: The file is not a valid route (${path.relative(this.props.root, filepath)})`
+					`ERR: The file is not a valid route (${path.relative(
+						this.props.root,
+						filepath
+					)})`
 				);
 				continue;
 			}
@@ -75,14 +99,16 @@ export class RouteGenerator {
 
 			// Only adds filename if it's not index
 			if (name !== 'index') {
-				param = name.replace(/\[(.+?)\]/g, ':$1');
 				// replaces [named] path with :named
+				param = name.replace(/\[(.+?)\]/g, ':$1');
 				route += `/${param}`;
 			}
 
+			// Handle index names
+			route = route === '' ? '/' : route.replaceAll('\\', '/');
+
 			this.routes.push({
-				// Handle index names
-				route: route === '' ? '/' : route.replaceAll('\\', '/'),
+				route: route.toLowerCase(),
 				path: relative.replaceAll('\\', '/').replace('index', ''),
 				directory: dir,
 				index: this.index++,
@@ -113,12 +139,16 @@ export class RouteGenerator {
 				: this.builders.lazyImport(`L${l.index}`, l.path)
 		);
 
+		const redirects = Object.values(this.redirects).map(([r, href]) =>
+			this.builders.component('Route', { path: r, key: r, element: `<Redirect href={"${href}"}/>` })
+		);
+
 		const builtRoutes = this.routes.map((r) => {
 			const component = this.builders.component(`R${r.index}`, r.meta);
 
 			return this.builders.component('Route', {
-				path: `"${r.route.toLowerCase()}"`,
-				key: `"${r.route.toLowerCase()}"`,
+				path: r.route,
+				key: r.route,
 				element: r.layout
 					? this.builders.component(`L${r.layout.index}`, undefined, component)
 					: component,
@@ -132,6 +162,7 @@ export class RouteGenerator {
 			this.builders.file(
 				this.props.router,
 				builtRoutes,
+				redirects,
 				imports,
 				layoutImports,
 				Boolean(this.props.router === 'BrowserRouter')

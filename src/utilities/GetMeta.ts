@@ -13,7 +13,7 @@ export async function readMeta(
 	for (const TypeNum in MetaFileNames) {
 		const MetaFileName = `${FileName.slice(undefined, -ext.length)}${MetaFileNames[TypeNum]}`;
 
-		if (!fs.statSync(MetaFileName)) continue;
+		if (!fs.existsSync(MetaFileName)) continue;
 
 		const RawMeta = await promised.readFile(MetaFileName, { encoding: 'utf-8' });
 		const Meta = JSON.parse(RawMeta);
