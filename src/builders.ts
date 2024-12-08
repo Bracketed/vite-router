@@ -16,9 +16,10 @@ export class Builders {
 // https://www.npmjs.com/package/@bracketed/vite-plugin-router
 // https://github.com/bracketed/vite-router
 
-import { type Props${redirects.length !== 0 ? ', Redirects' : ''} } from '@bracketed/vite-plugin-router';
+import type { Props } from '@bracketed/vite-plugin-router/types';
 import { ${useLazy ? 'lazy, Suspense' : 'Suspense'} } from 'react';
 import { ${router}, Route, Routes } from 'react-router-dom';
+${redirects.length !== 0 ? "import { Redirects } from '@bracketed/vite-plugin-router';" : ''}
 
 ${imports.join('\n').trim()}
 ${layoutImports.join('\n').trim()}
