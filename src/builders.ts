@@ -16,7 +16,7 @@ export class Builders {
 // https://www.npmjs.com/package/@bracketed/vite-plugin-router
 // https://github.com/bracketed/vite-router
 
-import { type RouteProps${redirects.length !== 0 ? ', Redirects' : ''} } from '@bracketed/vite-plugin-router';
+import { type Props${redirects.length !== 0 ? ', Redirects' : ''} } from '@bracketed/vite-plugin-router';
 import { ${useLazy ? 'lazy, Suspense' : 'Suspense'} } from 'react';
 import { ${router}, Route, Routes } from 'react-router-dom';
 
@@ -29,7 +29,7 @@ ${layoutImports.join('\n').trim()}
  * @link https://www.npmjs.com/package/@bracketed/vite-plugin-router
  * @link https://github.com/bracketed/vite-router
  */
-export function AppRoutes(props: RouteProps) {
+export function AppRoutes(props: Props) {
   return (
     <${router}>
       <Suspense fallback={props.loadingPage || <div>Loading...</div>}>
