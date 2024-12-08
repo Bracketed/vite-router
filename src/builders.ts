@@ -3,7 +3,7 @@ import { Options } from './types/Exports';
 
 export class Builders {
 	private readonly PrettierConfig: prettier.Options = {
-		parser: 'acorn',
+		parser: 'typescript',
 		arrowParens: 'always',
 		bracketSameLine: true,
 		bracketSpacing: true,
