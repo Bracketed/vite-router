@@ -16,7 +16,7 @@ This is a plugin built revolving around [Vite](https://vite.dev/) to allow the e
 <h2>Summary (Directory)</h2>
 
 - [Installation](#Installation)
-     <!--truncate-->
+  <!--truncate-->
      - [Yarn](#YarnInstall)
      - [Npm](#NpmInstall)
      - [Vite](#ViteInstall)
@@ -223,6 +223,78 @@ src/app/
     │  ├── index.tsx
     │  └── layout.tsx
     └── index.tsx
+```
+
+### Meta Files
+
+We can utilise a Meta file for a page, using `[PAGE-NAME].meta.json` or any custom names via the `meta` property of the Router initialiser.
+Meta files will include objects which will be added to your page object in the generated Routes file.
+
+Meta files can use various endings for the file name to work, these are configurable in `meta`, inside your Router initialiser:
+
+- `.meta.json`
+- `.page.json`
+- `.info.json`
+- `.information.json`
+- `.config.json`
+- `.configuration.json`
+- `.rc.json`
+- `.props.json`
+- `.properties.json`
+
+This is an example structure on how a meta file will be structured in your environment:
+
+```
+src/app/
+    ├── users/
+    │  ├── index.tsx
+    │  ├── index.meta.json
+    │  ├── user-info.tsx
+    │  └── user-info.meta.json
+    └── index.tsx
+```
+
+Example of a `.meta.json` file contents:
+
+```json
+{
+	"Location": "Home",
+	"Description": "The homepage of my application."
+}
+```
+
+In the final product of the `Router.tsx` file, your route object will essentially be like this:
+
+```tsx
+<ExamplePage Location={'Home'} Description={'The homepage of my application.'}></ExamplePage>
+```
+
+Obviously wrapped in a route object etc.
+
+Using `$Route` or any names of the following names below will customise the route location in the built Routes.
+
+- `$route`
+- `$Route`
+- `$location`
+- `$Location`
+
+Example:
+
+Meta:
+
+```json
+{
+	"$route": "/home-page"
+}
+```
+
+Route:
+
+```tsx
+<Route
+	path={'/home-page'}
+	key={'/home-page'}
+	element={<R1 Location={'Home'} Description={'The homepage of my application.'}></R1>}></Route>
 ```
 
 <h2 id="Licence">Licence</h2>

@@ -34,7 +34,6 @@ class ViteRouter {
 			'.config.json',
 			'.configuration.json',
 			'.rc.json',
-			'.json',
 			'.props.json',
 			'.properties.json',
 		];
