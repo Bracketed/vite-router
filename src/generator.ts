@@ -159,13 +159,14 @@ export class RouteGenerator {
 
 		await fs.writeFile(
 			this.props.output,
-			this.builders.file(
+			await this.builders.file(
 				this.props.router,
 				builtRoutes,
 				redirects,
 				imports,
 				layoutImports,
-				Boolean(this.props.router === 'BrowserRouter')
+				Boolean(this.props.router === 'BrowserRouter'),
+				this.props
 			),
 			'utf-8'
 		);

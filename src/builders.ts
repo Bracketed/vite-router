@@ -1,13 +1,35 @@
+import prettier from 'prettier';
+import { Options } from './types/Exports';
+
 export class Builders {
-	public readonly file = (
+	private readonly PrettierConfig: prettier.Options = {
+		parser: 'acorn',
+		arrowParens: 'always',
+		bracketSameLine: true,
+		bracketSpacing: true,
+		endOfLine: 'crlf',
+		htmlWhitespaceSensitivity: 'css',
+		jsxSingleQuote: true,
+		printWidth: 120,
+		proseWrap: 'preserve',
+		quoteProps: 'as-needed',
+		semi: true,
+		tabWidth: 8,
+		trailingComma: 'es5',
+		useTabs: true,
+	};
+
+	public readonly file = async (
 		router: string,
 		routes: string[],
 		redirects: string[],
 		imports: string[],
 		layoutImports: string[],
-		useLazy: boolean
-	): string => {
-		return `
+		useLazy: boolean,
+		options: Options
+	): Promise<string> => {
+		return await prettier.format(
+			`
 // @ts-nocheck
 // eslint-disable 
 // prettier-ignore
@@ -33,21 +55,20 @@ ${layoutImports.join('\n').trim()}
 export function AppRoutes(props: Props) {
   return (
     <${router}>
-      <Suspense fallback={props.loadingPage || <div>Loading...</div>}>
+	${options.suspense ? '<Suspense fallback={props.loadingPage || <div>Loading...</div>}>' : ''}
         <Routes>
           ${routes.join('\n').trim()}
 		  ${redirects.join('\n').trim()}
-          <Route
-            path="*"
-            element={props.notFoundPage || <div>404</div>}
-          />
+		  ${options[404] ? '<Route path="*" element={props.notFoundPage || <div>404</div>} />' : ''}
         </Routes>
-      </Suspense> 
+      ${options.suspense ? '</Suspense>' : ''} 
     </${router}>
   );
 }
 
-`.trim();
+`.trim(),
+			this.PrettierConfig
+		);
 	};
 
 	private readonly format = (value: unknown) => {

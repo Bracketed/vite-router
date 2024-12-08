@@ -1,6 +1,6 @@
 {
 	"name": "@bracketed/vite-plugin-router",
-	"version": "1.1.6",
+	"version": "1.2.0",
 	"description": "File system router for React applications using Vite.",
 	"keywords": [
 		"vite",
@@ -36,6 +36,7 @@
 		"chokidar": "^4.0.1",
 		"colorette": "^2.0.20",
 		"debounce": "^2.2.0",
+		"prettier": "^3.4.2",
 		"tslib": "^2.8.1"
 	},
 	"devDependencies": {

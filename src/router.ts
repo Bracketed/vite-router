@@ -39,6 +39,8 @@ class ViteRouter {
 		];
 		props.router ??= 'BrowserRouter';
 		props.root ??= process.cwd();
+		props[404] ??= false;
+		props.suspense ??= false;
 
 		// Makes sure the paths are absolute
 		props.dir = path.resolve(props.root, props.dir);

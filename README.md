@@ -181,6 +181,20 @@ Formatted as this example:
 }
 ```
 
+### 404
+
+- **Default:**
+     - `false`
+
+Enable the `notFoundPage` prop for the `AppRouter` component.
+
+### suspense
+
+- **Default:**
+     - `false`
+
+Enable the `loadingPage` prop for the `AppRouter` component, shows a loading page while a page is loading.
+
 ### onRoutesGenerated
 
 - **Default:**

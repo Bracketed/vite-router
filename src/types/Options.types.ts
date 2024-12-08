@@ -59,4 +59,18 @@ export interface Options {
 	 * @default 'BrowserRouter'
 	 */
 	router: 'BrowserRouter' | 'HashRouter';
+
+	/**
+	 * Utilise a loading screen for pages loading.
+	 *
+	 * @default false
+	 */
+	suspense: boolean;
+
+	/**
+	 * Utilise a prop-based 404 system, this is optional since you can just configure a custom one via `$route` via meta files.
+	 *
+	 * @default false
+	 */
+	'404': boolean;
 }
