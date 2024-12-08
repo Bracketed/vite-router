@@ -10,8 +10,8 @@ export async function readMeta(
 	const { ext } = path.parse(FileName);
 	const MetaFileNames = Opt.meta;
 
-	for (const Type in MetaFileNames) {
-		const MetaFileName = `${FileName.slice(undefined, -ext.length)}${Type}`;
+	for (const TypeNum in MetaFileNames) {
+		const MetaFileName = `${FileName.slice(undefined, -ext.length)}${MetaFileNames[TypeNum]}`;
 
 		if (!fs.statSync(MetaFileName)) continue;
 

@@ -47,17 +47,26 @@ export function AppRoutes(props: RouteProps) {
 `.trim();
 	};
 
+	private readonly format = (value: unknown) => {
+		if (typeof value === 'string') {
+			if (value.startsWith('"')) return value;
+			if (value.startsWith('<')) return value;
+
+			return `"${value}"`;
+		}
+
+		return value;
+	};
+
 	public readonly component = (
 		name: string,
-		properties?: Record<string, string | boolean | number | undefined>,
+		properties: Record<string, string | boolean | number | undefined> = {},
 		...child: string[]
 	): string => {
-		const props =
-			properties &&
-			Object.entries(properties)
-				.filter(([, value]) => value !== undefined)
-				.map(([key, value]) => `${key}={${value}}`)
-				.join(' ');
+		const props = Object.entries(properties)
+			.filter(([, value]) => value !== undefined)
+			.map(([key, value]) => `${key}={${this.format(value)}}`)
+			.join(' ');
 
 		return `
 

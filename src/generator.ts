@@ -114,13 +114,13 @@ export class RouteGenerator {
 		);
 
 		const builtRoutes = this.routes.map((r) => {
-			const component = this.builders.component(`R${r.index}`);
+			const component = this.builders.component(`R${r.index}`, r.meta);
 
 			return this.builders.component('Route', {
-				path: `"${r.route}"`,
-				key: `"${r.route}"`,
+				path: `"${r.route.toLowerCase()}"`,
+				key: `"${r.route.toLowerCase()}"`,
 				element: r.layout
-					? this.builders.component(`L${r.layout.index}`, r.meta, component)
+					? this.builders.component(`L${r.layout.index}`, undefined, component)
 					: component,
 			});
 		});
