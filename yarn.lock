@@ -11,12 +11,12 @@ __metadata:
   dependencies:
     "@types/debounce": "npm:^1.2.4"
     "@types/node": "npm:^20.12.2"
-    "@types/react": "npm:^18.2.74"
+    "@types/react": "npm:^19.0.1"
     chalk: "npm:^5.3.0"
     chokidar: "npm:^3.6.0"
     colorette: "npm:^2.0.20"
     debounce: "npm:^2.0.0"
-    react: "npm:^18.0.0"
+    react: "npm:^19.0.0"
     react-dom: "npm:^18.0.0"
     react-router-dom: "npm:^6.0.0"
     rollup: "npm:^4.13.2"
@@ -24,7 +24,7 @@ __metadata:
     typescript: "npm:^5.4.3"
     vite: "npm:^5.0.0"
   peerDependencies:
-    react: ^18.0.0
+    react: ^19.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.0.0
     vite: ^5.0.0
@@ -407,20 +407,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prop-types@npm:*":
-  version: 15.7.14
-  resolution: "@types/prop-types@npm:15.7.14"
-  checksum: 10c0/1ec775160bfab90b67a782d735952158c7e702ca4502968aa82565bd8e452c2de8601c8dfe349733073c31179116cf7340710160d3836aa8a1ef76d1532893b1
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^18.2.74":
-  version: 18.3.14
-  resolution: "@types/react@npm:18.3.14"
+"@types/react@npm:^19.0.1":
+  version: 19.0.1
+  resolution: "@types/react@npm:19.0.1"
   dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/d925fbfcf084238b93d1a0b5406d4cf9aeb37c4a1191559aa4ee107c2e55cc15327989140f03eddda4d471f5b935d4673fd74a86f451860edea18eae48ca44f8
+  checksum: 10c0/25eb69114abb9a6d5fc4414ee584388275bbc9ac32976449cf58b95fe9880efe6b3f936c3842be9bed8c571546a9752e8d3e2095288381e9c809269f5f574f2e
   languageName: node
   linkType: hard
 
@@ -1270,12 +1262,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.0.0":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
+"react@npm:^19.0.0":
+  version: 19.0.0
+  resolution: "react@npm:19.0.0"
+  checksum: 10c0/9cad8f103e8e3a16d15cb18a0d8115d8bd9f9e1ce3420310aea381eb42aa0a4f812cf047bb5441349257a05fba8a291515691e3cb51267279b2d2c3253f38471
   languageName: node
   linkType: hard
 
