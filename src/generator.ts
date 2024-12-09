@@ -139,9 +139,14 @@ export class RouteGenerator {
 				: this.builders.lazyImport(`L${l.index}`, l.path)
 		);
 
-		const redirects = Object.values(this.redirects).map(([r, href]) =>
-			this.builders.component('Route', { path: r, key: r, element: `<Redirect href={"${href}"}/>` })
-		);
+		const redirects = Object.values(this.redirects).map((href, i) => {
+			const r = Object.keys(this.redirects)[i];
+			return this.builders.component('Route', {
+				path: r,
+				key: r,
+				element: `<Redirect href={"${href}"}/>`,
+			});
+		});
 
 		const builtRoutes = this.routes.map((r) => {
 			const component = this.builders.component(`R${r.index}`, r.meta);

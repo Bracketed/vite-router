@@ -1,6 +1,6 @@
 {
 	"name": "@bracketed/vite-plugin-router",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"description": "File system router for React applications using Vite.",
 	"keywords": [
 		"vite",
@@ -76,6 +76,11 @@
 			"types": "./lib/types/Exports.d.ts",
 			"require": "./lib/types/Exports.js",
 			"import": "./lib/types/Exports.js"
+		},
+		"./components": {
+			"types": "./lib/components/Exports.d.ts",
+			"require": "./lib/components/Exports.js",
+			"import": "./lib/components/Exports.js"
 		}
 	},
 	"packageManager": "yarn@4.5.3"

@@ -41,7 +41,7 @@ export class Builders {
 import type { Props } from '@bracketed/vite-plugin-router/types';
 import { ${useLazy ? 'lazy, Suspense' : 'Suspense'} } from 'react';
 import { ${router}, Route, Routes } from 'react-router-dom';
-${redirects.length !== 0 ? "import { Redirects } from '@bracketed/vite-plugin-router';" : ''}
+${redirects.length !== 0 ? "import { Redirect } from '@bracketed/vite-plugin-router';" : ''}
 
 ${imports.join('\n').trim()}
 ${layoutImports.join('\n').trim()}

@@ -73,4 +73,16 @@ export interface Options {
 	 * @default false
 	 */
 	'404': boolean;
+
+	/**
+	 * Configuration for route locking, the options here will overwrite the built-ins for the Route Locking components using redirects to other pages.
+	 *
+	 * Route locking enables a route when `process.env.NODE_ENV` is set to `"development"` and disables it when `process.env.NODE_ENV` is set to `production`.
+	 *
+	 * @default { redirect: false, href: undefined }
+	 */
+	locked: {
+		redirect: boolean;
+		href: string;
+	};
 }
