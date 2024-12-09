@@ -1,4 +1,4 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 import path from 'node:path';
 import type { Route } from './types/Exports';
 
@@ -7,12 +7,12 @@ export class Hooks {
 		const schema = this.schema(routes);
 		const types = this.types(routes);
 
-		await fs.writeFile(
+		fs.writeFileSync(
 			path.resolve(__dirname, './hooks/schema.json'),
 			JSON.stringify(schema, null, 2),
 			'utf8'
 		);
-		await fs.writeFile(path.resolve(__dirname, './hooks/routes.d.ts'), types, 'utf8');
+		fs.writeFileSync(path.resolve(__dirname, './hooks/routes.d.ts'), types, 'utf8');
 	};
 
 	private readonly schema = (

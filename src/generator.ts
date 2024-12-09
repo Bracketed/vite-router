@@ -1,4 +1,4 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 import path from 'node:path';
 import { Builders } from './builders';
 import { Hooks } from './hooks';
@@ -162,7 +162,7 @@ export class RouteGenerator {
 
 		await new Hooks().new(this.routes);
 
-		await fs.writeFile(
+		fs.writeFileSync(
 			this.props.output,
 			await this.builders.file(
 				this.props.router,

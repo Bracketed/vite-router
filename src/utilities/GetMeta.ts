@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-import promised from 'node:fs/promises';
 import path from 'node:path';
 import { Options } from '../types/Exports';
 
@@ -15,7 +14,7 @@ export async function readMeta(
 
 		if (!fs.existsSync(MetaFileName)) continue;
 
-		const RawMeta = await promised.readFile(MetaFileName, { encoding: 'utf-8' });
+		const RawMeta = fs.readFileSync(MetaFileName, { encoding: 'utf-8' });
 		const Meta = JSON.parse(RawMeta);
 
 		return Meta;

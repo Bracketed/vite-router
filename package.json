@@ -1,6 +1,6 @@
 {
 	"name": "@bracketed/vite-plugin-router",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"description": "File system router for React applications using Vite.",
 	"keywords": [
 		"vite",
