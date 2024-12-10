@@ -1,6 +1,5 @@
-import chokidar, { FSWatcher } from 'chokidar';
 import debounce, { DebouncedFunction } from 'debounce';
-import fs from 'node:fs';
+import fs, { FSWatcher } from 'node:fs';
 import path from 'node:path';
 import { PluginOption } from 'vite';
 import { RouteGenerator } from './generator';
@@ -15,7 +14,7 @@ class ViteRouter {
 	constructor(props: Partial<Options> = {}) {
 		this.configuration = this.configureDefaults(props);
 
-		this.watcher = chokidar.watch(this.configuration.dir);
+		this.watcher = fs.watch(this.configuration.dir);
 		this.generate = debounce(new RouteGenerator(this.configuration).generate, 100);
 	}
 
@@ -61,16 +60,14 @@ class ViteRouter {
 
 			closeBundle: () => Constructors.watcher.close(),
 			configureServer: () => {
-				Constructors.watcher.on('add', () => Constructors.generate());
-				Constructors.watcher.on('unlink', () => Constructors.generate());
+				Constructors.watcher.on('change', () => Constructors.generate());
 
-				Constructors.watcher.on('ready', () => {
-					Logger.info('Vite router is ready');
-					Logger.info(`Watching at (${Constructors.configuration.dir})`);
-				});
+				Logger.info('Vite router is ready');
+				Logger.info(`Watching at (${Constructors.configuration.dir})`);
 			},
 		};
 	};
 }
 
 export { ViteRouter };
+

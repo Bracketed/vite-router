@@ -1,24 +1,6 @@
-import prettier from 'prettier';
 import { Options } from './types/Exports';
 
 export class Builders {
-	private readonly PrettierConfig: prettier.Options = {
-		parser: 'typescript',
-		arrowParens: 'always',
-		bracketSameLine: true,
-		bracketSpacing: true,
-		endOfLine: 'crlf',
-		htmlWhitespaceSensitivity: 'css',
-		jsxSingleQuote: true,
-		printWidth: 120,
-		proseWrap: 'preserve',
-		quoteProps: 'as-needed',
-		semi: true,
-		tabWidth: 8,
-		trailingComma: 'es5',
-		useTabs: true,
-	};
-
 	public readonly file = async (
 		router: string,
 		routes: string[],
@@ -28,8 +10,7 @@ export class Builders {
 		useLazy: boolean,
 		options: Options
 	): Promise<string> => {
-		return await prettier.format(
-			`
+		return `
 // @ts-nocheck
 // eslint-disable 
 // prettier-ignore
@@ -66,9 +47,7 @@ export function AppRoutes(props: Props) {
   );
 }
 
-`.trim(),
-			this.PrettierConfig
-		);
+`.trim()
 	};
 
 	private readonly format = (value: unknown) => {
