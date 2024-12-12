@@ -10,7 +10,6 @@
 		"declarationMap": true,
 		"sourceMap": true,
 		"outDir": "./lib",
-		"importHelpers": true,
 		"stripInternal": true,
 		"isolatedModules": true,
 		"allowSyntheticDefaultImports": true,
