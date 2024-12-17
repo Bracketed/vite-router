@@ -108,7 +108,7 @@ export class RouteGenerator {
 			route = route === '' ? '/' : route.replaceAll('\\', '/');
 
 			this.routes.push({
-				route: route.toLowerCase(),
+				route: route.toLowerCase().replace(/\[(.+?)\]/g, ':$1'), // this fixed some routes having incorrectly parsed params for some reason
 				path: relative.replaceAll('\\', '/').replace('index', ''),
 				directory: dir,
 				index: this.index++,
