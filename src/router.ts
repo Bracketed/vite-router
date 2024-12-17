@@ -64,10 +64,10 @@ class ViteRouter {
 
 				Logger.info('Vite router is ready');
 				Logger.info(`Watching at (${Constructors.configuration.dir})`);
+				Constructors.generate();
 			},
 		};
 	};
 }
 
 export { ViteRouter };
-
