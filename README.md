@@ -8,18 +8,19 @@
 
 <h2 align="center" >@bracketed/vite-plugin-router</h2>
 
-A fork of [vite-plugin-router](https://github.com/felipe-bergamaschi/vite-router) by Felipe Bergamaschi, enhanced to work with slightly more advanced methods, such as having meta files which can add extra props to your Route components.
-This is a plugin built revolving around [Vite](https://vite.dev/) to allow the ease of a fast, comprehensive and facilitative Router system in your Vite + React + Typescript/JavaScript applications.
+A fork of [vite-plugin-router](https://github.com/felipe-bergamaschi/vite-router) by Felipe Bergamaschi, enhanced to
+work with slightly more advanced methods, such as having meta files which can add extra props to your Route components.
+This is a plugin built revolving around [Vite](https://vite.dev/) to allow the ease of a fast, comprehensive and
+facilitative Router system in your Vite + React + Typescript/JavaScript applications.
 
 **NOTICE:** Does not support versions below react-router v6
 
 <h2>Summary (Directory)</h2>
 
-- [Installation](#Installation)
-  <!--truncate-->
-     - [Yarn](#YarnInstall)
-     - [Npm](#NpmInstall)
-     - [Vite](#ViteInstall)
+- [Installation](#Installation) <!--truncate-->
+    - [Yarn](#YarnInstall)
+    - [Npm](#NpmInstall)
+    - [Vite](#ViteInstall)
 - [Usage](#Usage)
 - [Contribution](#Contribution)
 - [Licence](#Licence)
@@ -52,25 +53,24 @@ import Routes from '@bracketed/vite-plugin-router';
 export default {
 	plugins: [
 		// ...
-		new ViteRouter().affix(),
+		new ViteRouter({ ... }),
 	],
 };
 ```
 
 <h2 id="Usage">Usage</h2>
 
-By default, @bracketed/vite-plugin-router creates a route file in the `src/` directory containing all
-the route settings for your application, while observing the files within `src/app`.
+By default, `@bracketed/vite-plugin-router` creates a route file in the `src/` directory containing all the route
+settings for your application, while observing the files within `src/app`, it is also accessible at runtime via Vite
+virtual modules at `virtual:vite-plugin-router`.
 
-Routes are configured using the [Suspense API](https://react.dev/reference/react/Suspense)
-of `react-router` by default.
+Routes are configured using the [Suspense API](https://react.dev/reference/react/Suspense) of `react-router` by default.
 
-This package also exports its typings via `@bracketed/vite-plugin-router/types` and its hooks via `@bracketed/vite-plugin-router/hooks`.
+This package also exports its typings via `@bracketed/vite-plugin-router/types`.
 
 ### React
 
-Create `app` folder within `src/` and add `index.tsx` file. Export a default component as
-an example:
+Create `app` folder within `src/` and add `index.tsx` file. Export a default component as an example:
 
 ```js
 export default function Page() {
@@ -82,22 +82,29 @@ export default function Page() {
 }
 ```
 
-Run your application `npm run dev`, and you will be able to observe the `(VITE ROUTER)`
-logs and find the 'routes' file created.
+Run your application `npm run dev`, and you will be able to observe the `(VITE ROUTER)` logs and find the 'routes' file
+created.
 
 Add `AppRoutes` to your `main.tsx`:
 
 ```js
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 // ...
-import { AppRoutes } from './routes'
+import { AppRoutes } from './routes';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <AppRoutes />
-  </React.StrictMode>,
-)
+ReactDOM.createRoot(document.body).render(<AppRoutes />);
+```
+
+Or alternatively,
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+// ...
+import { AppRoutes } from 'virtual:vite-plugin-router';
+
+ReactDOM.createRoot(document.body).render(<AppRoutes />);
 ```
 
 ## Configuration
@@ -111,7 +118,7 @@ import Routes from '@bracketed/vite-plugin-router';
 
 export default defineConfig({
 	plugins: [
-		new ViteRouter().affix({
+		new ViteRouter({
 			dir: 'src/app',
 			output: 'src',
 		}),
@@ -119,104 +126,17 @@ export default defineConfig({
 });
 ```
 
-### root
-
-- **Type:** `string`
-- **Default:** `process`
-
-The project pwd by default, where your project is currently.
-
-### dir
-
-- **Type:** `string`
-- **Default:** `'src/app'`
-
-Path to the pages directory.
-
-### output
-
-- **Type:** `string`
-- **Default:** `'src'`
-
-Output path for the `Routes` file.
-
-### router
-
-- **Default:**
-     - `BrowserRouter`
-
-Chooses the router to be used.
-
-### layouts
-
-- **Default:**
-     - `['layout.tsx', 'layout.jsx']`
-
-### extensions
-
-- **Default:**
-     - `['tsx', 'jsx', 'ts', 'js']`
-
-The types of files the router will search for.
-
-### meta
-
-- **Default:**
-     - `['.meta.json', '.page.json', '.info.json', '.information.json', '.config.json', '.configuration.json', '.rc.json', '.json', '.props.json', 'properties.json',]`
-
-The types of meta the router will search for so extra props can be added to Route components.
-
-### redirects
-
-- **Default:**
-     - `{}`
-
-Redirect routes in your application.
-Formatted as this example:
-
-```json
-{
-	"redirects/discord": "https://discord.com",
-	"discord": "https://discord.com"
-}
-```
-
-### 404
-
-- **Default:**
-     - `false`
-
-Enable the `notFoundPage` prop for the `AppRouter` component.
-
-### suspense
-
-- **Default:**
-     - `false`
-
-Enable the `loadingPage` prop for the `AppRouter` component, shows a loading page while a page is loading.
-
-### onRoutesGenerated
-
-- **Default:**
-     - `void` (none)
-
-A function to call upon the generation of the route handler.
-Parameters: (`Array<Route>`)
-
 ## File System Routing
 
-Inspired by the routing from
-[NextJS](https://nextjs.org/docs/pages/building-your-application/routing)
+Inspired by the routing from [NextJS](https://nextjs.org/docs/pages/building-your-application/routing)
 
-'Vite router' simplifies the process of creating routes for your vite application by
-automatically generating a 'routes' file based on the structure of the `.tsx` files in
-your pages directory. With this approach, connecting to your vite application becomes
-effortless, as no additional configuration is needed on your part.
+'Vite router' simplifies the process of creating routes for your vite application by automatically generating a 'routes'
+file based on the structure of the files in your pages directory. With this approach, connecting to your vite
+application becomes effortless, as no additional configuration is needed on your part.
 
 ### Basic Routing
 
-Pages will automatically map files from your pages directory to a route with the same
-name:
+Pages will automatically map files from your pages directory to a route with the same name:
 
 - `src/app/users.tsx` -> `/users`
 - `src/app/users/profile.tsx` -> `/users/profile`
@@ -231,18 +151,16 @@ Files with the name `index` are treated as the index page of a route:
 
 ### Dynamic Routes
 
-Dynamic routes are denoted using square brackets. Both directories and pages can be
-dynamic:
+Dynamic routes are denoted using square brackets. Both directories and pages can be dynamic:
 
 - `src/app/users/[id].tsx` -> `/users/:id` (`/users/123`)
 - `src/app/users/[user]/settings.tsx` -> `/users/:user/settings` (`/users/123/settings`)
 
 ### Layouts
 
-We can utilize 'layout' files to create nested layouts from the parent. By naming a
-specific file 'layout' and defining its child routes within it, we can establish a
-hierarchical structure for our application. This approach enhances the organization and
-management of routes, making it easier to maintain and extend the application.
+We can utilize 'layout' files to create nested layouts from the parent. By naming a specific file 'layout' and defining
+its child routes within it, we can establish a hierarchical structure for our application. This approach enhances the
+organization and management of routes, making it easier to maintain and extend the application.
 
 For example, this directory structure:
 
@@ -256,20 +174,16 @@ src/app/
 
 ### Meta Files
 
-We can utilise a Meta file for a page, using `[PAGE-NAME].meta.json` or any custom names via the `meta` property of the Router initialiser.
-Meta files will include objects which will be added to your page object in the generated Routes file.
+We can utilise a Meta file for a page, using `[PAGE-NAME].meta.json` or any custom names via the `meta` property of the
+Router initialiser. Meta files will include objects which will be added to your page object in the generated Routes
+file.
 
-Meta files can use various endings for the file name to work, these are configurable in `meta`, inside your Router initialiser:
+Meta files can use various endings for the file name to work, these are configurable in `meta`, inside your Router
+initialiser:
 
-- `.meta.json`
-- `.page.json`
-- `.info.json`
-- `.information.json`
-- `.config.json`
-- `.configuration.json`
-- `.rc.json`
-- `.props.json`
-- `.properties.json`
+- `*.meta.json`
+- `*.config.json`
+- `*.props.json`
 
 This is an example structure on how a meta file will be structured in your environment:
 
@@ -287,54 +201,48 @@ Example of a `.meta.json` file contents:
 
 ```json
 {
-	"Location": "Home",
-	"Description": "The homepage of my application."
+	"route": "123",
+	"slug": "/articles/documents/123",
+
+	"props": {
+		"location": "Home",
+		"description": "The homepage of my application."
+	}
 }
 ```
 
 In the final product of the `Router.tsx` file, your route object will essentially be like this:
 
 ```tsx
-<ExamplePage Location={'Home'} Description={'The homepage of my application.'}></ExamplePage>
-```
-
-Obviously wrapped in a route object etc.
-
-Using `$Route` or any names of the following names below will customise the route location in the built Routes.
-
-- `$route`
-- `$Route`
-- `$location`
-- `$Location`
-
-Example:
-
-Meta:
-
-```json
-{
-	"$route": "/home-page"
-}
+<ExamplePage
+	location='Home'
+	description='The homepage of my application.'
+/>
 ```
 
 Route:
 
 ```tsx
 <Route
-	path={'/home-page'}
-	key={'/home-page'}
-	element={<R1 Location={'Home'} Description={'The homepage of my application.'}></R1>}></Route>
+	path={'/123'} // using the slug optional overrides this, in the case of the config file above, it would be "/articles/documents/123"
+	key={'/123'}
+	element={
+		<R1
+			Location={'Home'}
+			Description={'The homepage of my application.'}></R1>
+	}></Route>
 ```
 
 <h2 id="Licence">Licence</h2>
 
-MIT License © 2023-PRESENT [Felipe Bergamaschi](https://github.com/felipe-bergamaschi)
-This package is a fork of `vite-plugin-router` by Felipe Bergamaschi, all rights reserved to respected contributors.
+MIT License © 2023-PRESENT [Felipe Bergamaschi](https://github.com/felipe-bergamaschi) This package is a fork of
+`vite-plugin-router` by Felipe Bergamaschi, all rights reserved to respected contributors.
 
 <h1 id="Contribution">Contribution & Help</h1>
 
-Feel free to contribute to this project, join our [discord](https://discord.com/invite/JZ4939cvMT) and help us with future developments of Project Bracketed & Packages by Bracketed Softworks.
-Please also notify us of errors within our projects as we may not be aware of them at the time.
+Feel free to contribute to this project, join our [discord](https://discord.com/invite/JZ4939cvMT) and help us with
+future developments of Project Bracketed & Packages by Bracketed Softworks. Please also notify us of errors within our
+projects as we may not be aware of them at the time.
 
 <br>
 

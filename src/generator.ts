@@ -1,95 +1,63 @@
+import { globSync } from 'glob';
 import fs from 'node:fs';
 import path from 'node:path';
+
 import { Builders } from './builders';
-import { Hooks } from './hooks';
-import { Logger } from './logger';
-import type { Layout, Options, Route } from './types/Exports';
-import { readMeta } from './utilities/GetMeta';
-import { sanitise } from './utilities/Sanitise';
-import { walk } from './utilities/Walk';
+import type { Options, Route } from './types/Exports';
+
+import { Logger } from './utilities/logger';
+import { Meta } from './utilities/meta';
+
+function sanitise(RouteString: string): string {
+	if (RouteString.startsWith('/')) {
+		RouteString = RouteString.slice(1);
+		return sanitise(RouteString);
+	}
+	return RouteString;
+}
 
 export class RouteGenerator {
-	private readonly paths: AsyncGenerator<string, void, void>;
 	private readonly builders: Builders = new Builders();
 	private readonly props: Options;
 
-	/** Record<directory, fullPath> */
-	private readonly layouts: Record<string, Layout> = {};
 	private readonly routes: Route[] = [];
 	private readonly redirects: Record<string, string>;
 
 	private index: number = 0;
 
+	private readonly console = new Logger();
+
 	constructor(props: Options) {
-		this.paths = walk(props.dir);
 		this.props = props;
 		this.redirects = props.redirects;
 	}
 
-	public readonly generate = async (): Promise<void> => {
-		for await (const filepath of this.paths) {
-			let { base, name, ext, dir } = path.parse(filepath);
+	public readonly generate = (write: boolean = true): string => {
+		const files = globSync(`${this.props.dir}/**/*.{${this.props.extensions.join(',')}}`, {
+			ignore: ['node_modules/**', '**/Router.*', ...this.props.ignore],
+		});
 
-			// TODO: Remove this line
-			if (name === 'styles') continue;
+		this.routes.length = 0; // clear between runs
+		this.index = 0;
+
+		for (const filepath of files) {
+			let { name, ext, dir } = path.parse(filepath);
 
 			// full relative path without extension
-			const relative =
-				// typescript always uses / as path separator
-				`./${path
-					.relative(path.dirname(this.props.output), filepath)
-					.slice(undefined, -ext.length)}`;
+			const relative = `./${path
+				.relative(path.resolve(this.props.root, this.props.base), filepath)
+				.slice(0, -ext.length)
+				.replaceAll('\\', '/')}`;
 
-			// Isn't a file route
-			if (!this.props.extensions.includes(ext)) continue;
+			const meta = new Meta({ metas: this.props.meta, path: filepath });
 
-			const Meta = await readMeta(this.props, filepath);
+			if (meta.exists())
+				if (meta.has('route'))
+					name = sanitise(meta.get<string>('slug') ?? (meta.get<string>('route') as string));
 
-			if (Meta && Meta['$route'])
-				if (typeof Meta['$route'] === 'string') name = sanitise(Meta['$route']);
-				else Logger.error('$route in Meta files can only be a string.');
-
-			if (Meta && Meta['$Route'])
-				if (typeof Meta['$Route'] === 'string') name = sanitise(Meta['$Route']);
-				else Logger.error('$Route in Meta files can only be a string.');
-
-			if (Meta && Meta['$location'])
-				if (typeof Meta['$location'] === 'string') name = sanitise(Meta['$location']);
-				else Logger.error('$location in Meta files can only be a string.');
-
-			if (Meta && Meta['$Location'])
-				if (typeof Meta['$Location'] === 'string') name = sanitise(Meta['$Location']);
-				else Logger.error('$Location in Meta files can only be a string.');
-
-			if (
-				(name.startsWith('[') && !name.endsWith(']')) ||
-				(!name.startsWith('[') && name.endsWith(']'))
-			) {
+			if ((name.startsWith('[') && !name.endsWith(']')) || (!name.startsWith('[') && name.endsWith(']'))) {
 				// Checks if the filename is not [id]something.ext
-				Logger.error(
-					`ERR: The file is not a valid route (${path.relative(
-						this.props.root,
-						filepath
-					)})`
-				);
-				continue;
-			}
-
-			// Is a layout file
-			if (this.props.layouts.includes(base)) {
-				if (!this.layouts[dir])
-					this.layouts[dir] = {
-						path: relative.replaceAll('\\', '/'),
-						index: this.index++,
-					};
-				else
-					Logger.error(
-						`ERR: Multiple layouts found in the same directory (${path.relative(
-							this.props.root,
-							dir
-						)}), using (${path.relative(this.props.root, filepath)}).`
-					);
-
+				this.console.error(`ERR: The file is not a valid route (${path.relative(this.props.root, filepath)})`);
 				continue;
 			}
 
@@ -109,23 +77,10 @@ export class RouteGenerator {
 
 			this.routes.push({
 				route: route.toLowerCase().replace(/\[(.+?)\]/g, ':$1'), // this fixed some routes having incorrectly parsed params for some reason
-				path: relative.replaceAll('\\', '/').replace('index', ''),
-				directory: dir,
+				path: relative.replace(/\/index$/, ''),
 				index: this.index++,
-				params: param ? [param] : undefined,
-				meta: Meta,
+				meta: meta.get('props'),
 			});
-		}
-
-		// Finds the layout for each route
-		for (const route of this.routes) {
-			let dir = route.directory;
-
-			// Finds the layout for the route while our root directory is not reached
-			do {
-				route.layout = this.layouts[dir];
-				dir = path.dirname(dir);
-			} while (!route.layout && dir.length >= this.props.dir.length);
 		}
 
 		const imports =
@@ -133,14 +88,9 @@ export class RouteGenerator {
 				? this.routes.map((r) => this.builders.defaultImport(`R${r.index}`, r.path))
 				: this.routes.map((r) => this.builders.lazyImport(`R${r.index}`, r.path));
 
-		const layoutImports = Object.values(this.layouts).map((l) =>
-			this.props.router === 'HashRouter'
-				? this.builders.defaultImport(`L${l.index}`, l.path)
-				: this.builders.lazyImport(`L${l.index}`, l.path)
-		);
-
 		const redirects = Object.values(this.redirects).map((href, i) => {
 			const r = Object.keys(this.redirects)[i];
+
 			return this.builders.component('Route', {
 				path: r,
 				key: r,
@@ -154,32 +104,27 @@ export class RouteGenerator {
 			return this.builders.component('Route', {
 				path: r.route,
 				key: r.route,
-				element: r.layout
-					? this.builders.component(`L${r.layout.index}`, undefined, component)
-					: component,
+				element: component,
 			});
 		});
 
-		await new Hooks().new(this.routes);
-
-		fs.writeFileSync(
-			this.props.output,
-			await this.builders.file(
-				this.props.router,
-				builtRoutes,
-				redirects,
-				imports,
-				layoutImports,
-				Boolean(this.props.router === 'BrowserRouter'),
-				this.props
-			),
-			'utf-8'
+		const content = this.builders.file(
+			this.props.router,
+			builtRoutes,
+			redirects,
+			imports,
+			this.props.router === 'BrowserRouter',
+			this.props
 		);
 
-		this.props.onRoutesGenerated?.(this.routes);
+		if (this.props.output && this.props.write && write) fs.writeFileSync(this.props.output, content, 'utf-8');
 
-		Logger.info(
-			`Generated ${this.routes.length} routes at ${path.relative(this.props.root, this.props.output)}`
+		this.props.onRoutesGenerated(this.routes);
+
+		this.console.info(
+			`Generated ${this.routes.length} routes ${write ? `at ${this.props.output}` : `(virtual module)`}`
 		);
+
+		return content;
 	};
 }

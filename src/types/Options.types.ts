@@ -1,4 +1,4 @@
-import { Route } from './Route.types';
+import type { Route } from './Route.types';
 
 export interface Options {
 	/**
@@ -11,28 +11,42 @@ export interface Options {
 	/**
 	 * Root of your project
 	 *
-	 * @default process
+	 * @default process.cwd()
 	 */
 	root: string;
 
 	/**
+	 * The base folder for your project
+	 *
+	 * @default 'src'
+	 */
+	base: string;
+
+	/**
+	 * Write the task output to an output file
+	 *
+	 * @default false
+	 */
+	write: boolean;
+
+	/**
 	 * Output path for the `routes` file.
 	 *
-	 * @default 'src/Routes.tsx'
+	 * @default 'src/Routes.*'
 	 */
 	output: string;
 
 	/**
 	 * Match the file extensions to be used for the plugin
 	 *
-	 * @default ['.tsx', '.ts', '.jsx', '.js']
+	 * @default ['.tsx', '.jsx']
 	 */
 	extensions: string[];
 
 	/**
 	 * Utilise meta files for routes.
 	 *
-	 * @default ['meta.json', 'page.json', '.info.json', '.config.json', '.rc.json']
+	 * @default ['meta.json', 'config.json', 'props.json']
 	 */
 	meta: string[];
 
@@ -43,15 +57,8 @@ export interface Options {
 	 */
 	redirects: Record<string, string>;
 
-	/**
-	 * Matches all layout files
-	 *
-	 * @default ['layout.tsx', 'layout.jsx']
-	 */
-	layouts: string[];
-
 	/** Called when the routes are generated */
-	onRoutesGenerated?: (routes: Route[]) => void;
+	onRoutesGenerated: (routes: Route[]) => void;
 
 	/**
 	 * Chooses the router to be used
@@ -61,6 +68,13 @@ export interface Options {
 	router: 'BrowserRouter' | 'HashRouter';
 
 	/**
+	 * Whether which way to reload the vModule
+	 *
+	 * @default undefined
+	 */
+	reload?: 'hot' | 'full' | undefined;
+
+	/**
 	 * Utilise a loading screen for pages loading.
 	 *
 	 * @default false
@@ -68,21 +82,9 @@ export interface Options {
 	suspense: boolean;
 
 	/**
-	 * Utilise a prop-based 404 system, this is optional since you can just configure a custom one via `$route` via meta files.
+	 * Files or folders to ignore when watching for edits and routing for files.
 	 *
-	 * @default false
+	 * @default []
 	 */
-	'404': boolean;
-
-	/**
-	 * Configuration for route locking, the options here will overwrite the built-ins for the Route Locking components using redirects to other pages.
-	 *
-	 * Route locking enables a route when `process.env.NODE_ENV` is set to `"development"` and disables it when `process.env.NODE_ENV` is set to `production`.
-	 *
-	 * @default { redirect: false, href: undefined }
-	 */
-	locked: {
-		redirect: boolean;
-		href: string;
-	};
+	ignore: Array<string>;
 }

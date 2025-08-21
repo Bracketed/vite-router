@@ -1,4 +1,3 @@
-export * from './Layout.types';
-export * from './Options.types';
-export * from './Props.types';
-export * from './Route.types';
+export type * from './Options.types';
+export type * from './Props.types';
+export type * from './Route.types';
