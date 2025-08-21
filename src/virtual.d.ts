@@ -1,3 +1,4 @@
 declare module 'virtual:vite-plugin-router' {
-	export const AppRoutes: React.ReactNode;
+	import React from 'react';
+	export const AppRoutes: React.FC;
 }
