@@ -1,5 +1,4 @@
 import chokidar, { FSWatcher } from 'chokidar';
-import { cosmiconfigSync } from 'cosmiconfig';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { ModuleNode, PluginOption, ViteDevServer } from 'vite';
@@ -8,9 +7,10 @@ import { RouteGenerator } from './generator';
 
 import type { VitePagesPluginOptions } from './types';
 
+import { isTypescript } from './utilities/isTypescript';
 import { Logger } from './utilities/logger';
 
-export class ViteRouter {
+class ViteRouter {
 	public readonly configuration: VitePagesPluginOptions;
 	public readonly watcher: FSWatcher;
 	public readonly generate: (write?: boolean) => string;
@@ -30,12 +30,6 @@ export class ViteRouter {
 		});
 	}
 
-	private readonly isTypescript = (startDir: string) =>
-		cosmiconfigSync('tsconfig', {
-			searchPlaces: ['tsconfig.json', 'tsconfig.base.json', 'tsconfig.app.json', 'tsconfig.*.json'],
-			stopDir: path.parse(startDir).root,
-		}).search(startDir);
-
 	private readonly configureDefaults = (props: Partial<VitePagesPluginOptions>): VitePagesPluginOptions => {
 		// Defines default values
 		props.base ??= 'src';
@@ -53,7 +47,7 @@ export class ViteRouter {
 		// Makes sure the paths are absolute
 		props.dir = path.resolve(props.root, props.dir).replace(/\/+$/, '');
 
-		props.output ??= `${props.base}/Router.${this.isTypescript(props.root) ? 'tsx' : 'jsx'}`;
+		props.output ??= `${props.base}/Router.${isTypescript(props.root) ? 'tsx' : 'jsx'}`;
 		props.output = path.resolve(props.root, props.output).replace(/\/+$/, '');
 
 		props.onRoutesGenerated ??= () => void 0;
@@ -62,7 +56,7 @@ export class ViteRouter {
 	};
 }
 
-export function viteRouter(props: Partial<VitePagesPluginOptions> = {}) {
+function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 	const name: string = 'vite-plugin-router';
 	const VIRTUAL_MODULE_ID: string = `virtual:${name}`;
 	const RESOLVED_VIRTUAL_MODULE_ID: string = `\0${VIRTUAL_MODULE_ID}`;
@@ -121,3 +115,6 @@ export function viteRouter(props: Partial<VitePagesPluginOptions> = {}) {
 		},
 	} satisfies PluginOption;
 }
+
+export { plugin as viteRouter };
+export default plugin;

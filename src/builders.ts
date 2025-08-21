@@ -1,4 +1,5 @@
 import type { VitePagesPluginOptions } from './types';
+import { isTypescript } from './utilities/isTypescript';
 
 export class Builders {
 	public readonly file = (
@@ -7,9 +8,11 @@ export class Builders {
 		redirects: string[],
 		imports: string[],
 		useLazy: boolean,
-		options: VitePagesPluginOptions
-	): string =>
-		`
+		options: VitePagesPluginOptions,
+		virtual: boolean = false
+	): string => {
+		const isTs = isTypescript(options.root);
+		return `
 // @ts-nocheck
 // eslint-disable 
 // prettier-ignore
@@ -18,7 +21,7 @@ export class Builders {
 // https://www.npmjs.com/package/@bracketed/vite-plugin-router
 // https://github.com/bracketed/vite-router
 
-import type { VitePagesPluginProps } from '@bracketed/vite-plugin-router/types';
+${virtual === false ? (isTs ? "import type { VitePagesPluginProps } from '@bracketed/vite-plugin-router/types';" : '') : ''}
 ${useLazy || options.suspense ? `import { ${useLazy ? 'lazy, Suspense' : 'Suspense'} } from 'react';` : ''}
 import { ${router}, Route, Routes } from 'react-router-dom';
 ${redirects.length > 0 ? "import { Redirect } from '@bracketed/vite-plugin-router';" : ''}
@@ -31,7 +34,7 @@ ${imports.length ? imports.join('\n') : ''}
  * @link https://www.npmjs.com/package/@bracketed/vite-plugin-router
  * @link https://github.com/bracketed/vite-router
  */
-export function AppRoutes(props: VitePagesPluginProps) {
+export function AppRoutes(props${virtual === false ? (isTs ? ': VitePagesPluginProps' : '') : ''}) {
   return (
     <${router}>
       ${options.suspense === false ? '' : '<Suspense fallback={props.loadingPage || <div>Loading...</div>}>'}
@@ -44,6 +47,7 @@ ${redirects.map((r) => '          ' + r).join('\n')}
   );
 }
 `.trim();
+	};
 
 	private readonly format = (value: unknown) => {
 		if (typeof value === 'string') {

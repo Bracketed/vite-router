@@ -116,7 +116,8 @@ export class RouteGenerator {
 			redirects,
 			imports,
 			this.props.router === 'BrowserRouter',
-			this.props
+			this.props,
+			write
 		);
 
 		if (this.props.output && this.props.write && write) fs.writeFileSync(this.props.output, content, 'utf-8');
