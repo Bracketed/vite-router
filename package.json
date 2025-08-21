@@ -1,6 +1,6 @@
 {
 	"name": "@bracketed/vite-plugin-router",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"description": "File system router for React applications using Vite.",
 	"keywords": [
 		"vite",
@@ -105,10 +105,10 @@
 		},
 		"./virtual": {
 			"import": {
-				"types": "./lib/esm/virtual.d.mts"
+				"types": "./lib/esm/virtual.d.d.mts"
 			},
 			"require": {
-				"types": "./lib/cjs/virtual.d.ts"
+				"types": "./lib/cjs/virtual.d.d.ts"
 			}
 		}
 	},
