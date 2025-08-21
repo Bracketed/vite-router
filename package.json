@@ -11,11 +11,11 @@
 		"access": "public"
 	},
 	"bugs": {
-		"url": "https://github.com/bracketed/vite-router/issues"
+		"url": "https://github.com/Bracketed/vite-router/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/bracketed/vite-router"
+		"url": "https://github.com/Bracketed/vite-router"
 	},
 	"license": "MIT",
 	"author": "@bracketed",
