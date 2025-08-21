@@ -36,10 +36,10 @@ export class RouteGenerator {
 
 	public readonly generate = async (write: boolean = true): Promise<string> => {
 		const files = await glob(`${this.props.dir}/**/*.{${this.props.extensions.join(',')}}`, {
-			ignore: ['node_modules/**', '**/Router.*', ...this.props.ignore],
+			ignore: ['node_modules/**', ...this.props.ignore],
 		});
 
-		this.console.info(this.props.dir, files, this.props.extensions.join(','));
+		this.console.info(`${this.props.dir}/**/*.{${this.props.extensions.join(',')}}`);
 
 		for (const filepath of files) {
 			let { name, ext, dir } = path.parse(filepath);
