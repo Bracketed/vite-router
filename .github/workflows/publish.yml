@@ -1,8 +1,7 @@
 name: Node.js Package (NPM)
 
 on:
-    release:
-        types: [published]
+    push:
     workflow_dispatch:
 
 jobs:
