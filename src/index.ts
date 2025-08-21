@@ -1,5 +1,5 @@
 import chokidar, { FSWatcher } from 'chokidar';
-import { transformSync } from 'esbuild';
+import { transform } from 'esbuild';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { ModuleNode, PluginOption, ViteDevServer } from 'vite';
@@ -14,7 +14,7 @@ import { Logger } from './utilities/logger';
 class ViteRouter {
 	public readonly configuration: VitePagesPluginOptions;
 	public readonly watcher: FSWatcher;
-	public readonly generate: (write?: boolean) => string;
+	public readonly generate: (write?: boolean) => Promise<string>;
 
 	constructor(props: Partial<VitePagesPluginOptions> = {}) {
 		this.configuration = this.configureDefaults(props);
@@ -116,9 +116,13 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 			if (id === VIRTUAL_MODULE_ID) return RESOLVED_VIRTUAL_MODULE_ID;
 			return;
 		},
-		load: (id: string) => {
-			if (id === RESOLVED_VIRTUAL_MODULE_ID)
-				return transformSync(Router.generate(false), { loader: isTs ? 'tsx' : 'jsx' }).code;
+		load: async (id: string) => {
+			if (id === RESOLVED_VIRTUAL_MODULE_ID) {
+				const code = await Router.generate(false);
+				const transformed = await transform(code, { loader: isTs ? 'tsx' : 'jsx' });
+
+				return transformed.code;
+			}
 			return;
 		},
 	} satisfies PluginOption;

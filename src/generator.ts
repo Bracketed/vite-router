@@ -1,4 +1,4 @@
-import { globSync } from 'glob';
+import { glob } from 'glob';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -34,8 +34,8 @@ export class RouteGenerator {
 		this.redirects = props.redirects;
 	}
 
-	public readonly generate = (write: boolean = true): string => {
-		const files = globSync(`${this.props.dir}/**/*.{${this.props.extensions.join(',')}}`, {
+	public readonly generate = async (write: boolean = true): Promise<string> => {
+		const files = await glob(`${this.props.dir}/**/*.{${this.props.extensions.join(',')}}`, {
 			ignore: ['node_modules/**', '**/Router.*', ...this.props.ignore],
 		});
 
