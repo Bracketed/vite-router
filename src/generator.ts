@@ -39,7 +39,7 @@ export class RouteGenerator {
 			ignore: ['node_modules/**', '**/Router.*', ...this.props.ignore],
 		});
 
-		this.console.info(this.props.dir, files);
+		this.console.info(this.props.dir, files, this.props.extensions.join(','));
 
 		for (const filepath of files) {
 			let { name, ext, dir } = path.parse(filepath);
