@@ -101,7 +101,7 @@ export class RouteGenerator {
 		});
 
 		const builtRoutes = this.routes.map((r) => {
-			const component = this.builders.component(`R${r.index}`, r.meta);
+			const component = this.builders.component(`Page${r.index}`, r.meta);
 
 			return this.builders.component('Route', {
 				path: r.route,

@@ -12,6 +12,7 @@ export class Builders {
 		virtual: boolean = false
 	): string => {
 		const isTs = isTypescript(options.root);
+
 		return `
 // @ts-nocheck
 // eslint-disable 
@@ -62,15 +63,14 @@ ${redirects.map((r) => '          ' + r).join('\n')}
 
 	public readonly component = (
 		name: string,
-		properties: Record<string, string | boolean | number | undefined> = {},
-		...child: string[]
+		properties: Record<string, string | boolean | number | undefined> = {}
 	): string => {
 		const props = Object.entries(properties)
 			.filter(([, value]) => value !== undefined)
 			.map(([key, value]) => `${key}={${this.format(value)}}`)
 			.join(' ');
 
-		return `<${name}${props ? ` ${props}` : ''}>${child.join('\n')}</${name}>`;
+		return `<${name}${props ? ` ${props}` : ''} />`;
 	};
 
 	public readonly lazyImport = (name: string, path: string): string =>
