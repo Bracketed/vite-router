@@ -1,4 +1,5 @@
 import chokidar, { FSWatcher } from 'chokidar';
+import { transformSync } from 'esbuild';
 import fs from 'node:fs';
 import path from 'node:path';
 import type { ModuleNode, PluginOption, ViteDevServer } from 'vite';
@@ -57,11 +58,15 @@ class ViteRouter {
 }
 
 function plugin(props: Partial<VitePagesPluginOptions> = {}) {
-	const name: string = 'vite-plugin-router';
-	const VIRTUAL_MODULE_ID: string = `virtual:${name}`;
-	const RESOLVED_VIRTUAL_MODULE_ID: string = `\0${VIRTUAL_MODULE_ID}`;
 	const Router = new ViteRouter(props);
 	const logger = new Logger();
+	const root = props.root ?? process.cwd();
+	const isTs = isTypescript(root);
+
+	const name: string = 'vite-plugin-router';
+
+	const VIRTUAL_MODULE_ID: string = `virtual:${name}.${isTs ? 'tsx' : 'jsx'}`;
+	const RESOLVED_VIRTUAL_MODULE_ID: string = `\0${VIRTUAL_MODULE_ID}`;
 
 	return {
 		name,
@@ -102,7 +107,7 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 			Router.generate();
 		},
 		buildStart: () => {
-			Router.generate(true);
+			Router.generate();
 		},
 
 		resolveId: (id: string) => {
@@ -110,7 +115,7 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 			return;
 		},
 		load: (id: string) => {
-			if (id === RESOLVED_VIRTUAL_MODULE_ID) return Router.generate(false);
+			if (id === RESOLVED_VIRTUAL_MODULE_ID) return transformSync(Router.generate(false), { loader: 'tsx' }).code;
 			return;
 		},
 	} satisfies PluginOption;

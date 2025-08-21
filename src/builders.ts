@@ -23,7 +23,7 @@ export class Builders {
 // https://github.com/bracketed/vite-router
 
 ${virtual === false ? (isTs ? "import type { VitePagesPluginProps } from '@bracketed/vite-plugin-router/types';" : '') : ''}
-${useLazy || options.suspense ? `import { ${useLazy ? 'lazy, Suspense' : 'Suspense'} } from 'react';` : ''}
+${useLazy || options.suspense ? `import React, { ${useLazy ? 'lazy, Suspense' : 'Suspense'} } from 'react';` : "import React from 'react';"}
 import { ${router}, Route, Routes } from 'react-router-dom';
 ${redirects.length > 0 ? "import { Redirect } from '@bracketed/vite-plugin-router';" : ''}
 
