@@ -22,7 +22,7 @@ export class RouteGenerator {
 	private readonly builders: Builders = new Builders();
 	private readonly props: VitePagesPluginOptions;
 
-	private readonly routes: VitePagesPluginRoute[] = [];
+	private readonly routes: Array<VitePagesPluginRoute> = [];
 	private readonly redirects: Record<string, string>;
 
 	private index: number = 0;
@@ -38,6 +38,8 @@ export class RouteGenerator {
 		const files = globSync(`${this.props.dir}/**/*.{${this.props.extensions.join(',')}}`, {
 			ignore: ['node_modules/**', '**/Router.*', ...this.props.ignore],
 		});
+
+		this.console.info(this.props.dir, files);
 
 		for (const filepath of files) {
 			let { name, ext, dir } = path.parse(filepath);

@@ -63,6 +63,8 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 	const root = props.root ?? process.cwd();
 	const isTs = isTypescript(root);
 
+	logger.info(root);
+
 	const name: string = 'vite-plugin-router';
 
 	const VIRTUAL_MODULE_ID: string = `virtual:${name}.${isTs ? 'tsx' : 'jsx'}`;
@@ -115,7 +117,8 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 			return;
 		},
 		load: (id: string) => {
-			if (id === RESOLVED_VIRTUAL_MODULE_ID) return transformSync(Router.generate(false), { loader: 'tsx' }).code;
+			if (id === RESOLVED_VIRTUAL_MODULE_ID)
+				return transformSync(Router.generate(false), { loader: isTs ? 'tsx' : 'jsx' }).code;
 			return;
 		},
 	} satisfies PluginOption;
