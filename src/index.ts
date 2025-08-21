@@ -10,9 +10,6 @@ import type { VitePagesPluginOptions } from './types';
 
 import { Logger } from './utilities/logger';
 
-export * from './components';
-export type * from './types';
-
 export class ViteRouter {
 	public readonly configuration: VitePagesPluginOptions;
 	public readonly watcher: FSWatcher;

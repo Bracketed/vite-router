@@ -5,7 +5,7 @@ import path from 'node:path';
 import { Builders } from './builders';
 
 import type { VitePagesPluginOptions } from './types';
-import type { VitePagesPluginRoute } from './types/Route.types';
+import type { VitePagesPluginRoute } from './types/Route';
 
 import { Logger } from './utilities/logger';
 import { Meta } from './utilities/meta';

@@ -1,4 +1,4 @@
-import type { VitePagesPluginRoute } from './Route.types';
+import type { VitePagesPluginRoute } from './Route';
 
 export interface VitePagesPluginOptions {
 	/**
