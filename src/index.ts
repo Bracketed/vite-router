@@ -2,30 +2,23 @@ import chokidar, { FSWatcher } from 'chokidar';
 import { cosmiconfigSync } from 'cosmiconfig';
 import fs from 'node:fs';
 import path from 'node:path';
-import type { ModuleNode, ViteDevServer } from 'vite';
+import type { ModuleNode, PluginOption, ViteDevServer } from 'vite';
 
 import { RouteGenerator } from './generator';
 
-import type { Options } from './types/Exports';
+import type { VitePagesPluginOptions } from './types';
 
 import { Logger } from './utilities/logger';
 
-export * from './components/Exports';
-export type * from './types/Exports';
+export * from './components';
+export type * from './types';
 
 export class ViteRouter {
-	public readonly name: string = 'vite-plugin-router';
-	public readonly enforce: string = 'pre';
+	public readonly configuration: VitePagesPluginOptions;
+	public readonly watcher: FSWatcher;
+	public readonly generate: (write?: boolean) => string;
 
-	private readonly VIRTUAL_MODULE_ID: string = `virtual:${this.name}`;
-	private readonly RESOLVED_VIRTUAL_MODULE_ID: string = `\0${this.VIRTUAL_MODULE_ID}`;
-
-	private readonly configuration: Options;
-	private readonly watcher: FSWatcher;
-	private readonly generate: (write?: boolean) => string;
-	private readonly logger = new Logger();
-
-	constructor(props: Partial<Options> = {}) {
+	constructor(props: Partial<VitePagesPluginOptions> = {}) {
 		this.configuration = this.configureDefaults(props);
 		this.generate = new RouteGenerator(this.configuration).generate;
 
@@ -46,7 +39,7 @@ export class ViteRouter {
 			stopDir: path.parse(startDir).root,
 		}).search(startDir);
 
-	private readonly configureDefaults = (props: Partial<Options>): Options => {
+	private readonly configureDefaults = (props: Partial<VitePagesPluginOptions>): VitePagesPluginOptions => {
 		// Defines default values
 		props.base ??= 'src';
 		props.dir = props.dir ? props.dir : `${props.base}/app`;
@@ -68,52 +61,66 @@ export class ViteRouter {
 
 		props.onRoutesGenerated ??= () => void 0;
 
-		return props as Options;
+		return props as VitePagesPluginOptions;
 	};
+}
 
-	public closeBundle = () => this.watcher.close();
-	public configureServer = (server: ViteDevServer) => {
-		this.watcher.on('all', () => {
-			this.generate();
+export function viteRouter(props: Partial<VitePagesPluginOptions> = {}) {
+	const name: string = 'vite-plugin-router';
+	const VIRTUAL_MODULE_ID: string = `virtual:${name}`;
+	const RESOLVED_VIRTUAL_MODULE_ID: string = `\0${VIRTUAL_MODULE_ID}`;
+	const Router = new ViteRouter(props);
+	const logger = new Logger();
 
-			const mod: ModuleNode | undefined = server.moduleGraph.getModuleById(this.RESOLVED_VIRTUAL_MODULE_ID);
+	return {
+		name,
+		enforce: 'pre',
 
-			if (mod && this.configuration.reload) {
-				server.moduleGraph.invalidateModule(mod);
-				server.ws.send(
-					this.configuration.reload === 'full'
-						? {
-								type: 'full-reload',
-								path: '*',
-							}
-						: {
-								type: 'update',
-								updates: [
-									{
-										type: 'js-update',
-										path: this.VIRTUAL_MODULE_ID,
-										acceptedPath: this.VIRTUAL_MODULE_ID,
-										timestamp: Date.now(),
-									},
-								],
-							}
-				);
-			}
-		});
+		closeBundle: () => Router.watcher.close(),
+		configureServer: (server: ViteDevServer) => {
+			Router.watcher.on('all', () => {
+				Router.generate();
 
-		this.logger.info('Vite router is ready');
-		this.logger.info(`Watching at (${this.configuration.dir})`);
-		this.generate();
-	};
-	public buildStart = () => this.generate();
+				const mod: ModuleNode | undefined = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MODULE_ID);
 
-	//  TODO: finish
-	public resolveId(id: string) {
-		if (id === this.VIRTUAL_MODULE_ID) return this.RESOLVED_VIRTUAL_MODULE_ID;
-		return;
-	}
-	public load(id: string) {
-		if (id === this.RESOLVED_VIRTUAL_MODULE_ID) return this.generate(false);
-		return;
-	}
+				if (mod && Router.configuration.reload) {
+					server.moduleGraph.invalidateModule(mod);
+					server.ws.send(
+						Router.configuration.reload === 'full'
+							? {
+									type: 'full-reload',
+									path: '*',
+								}
+							: {
+									type: 'update',
+									updates: [
+										{
+											type: 'js-update',
+											path: VIRTUAL_MODULE_ID,
+											acceptedPath: VIRTUAL_MODULE_ID,
+											timestamp: Date.now(),
+										},
+									],
+								}
+					);
+				}
+			});
+
+			logger.info('Vite router is ready');
+			logger.info(`Watching at (${Router.configuration.dir})`);
+			Router.generate();
+		},
+		buildStart: () => {
+			Router.generate(true);
+		},
+
+		resolveId: (id: string) => {
+			if (id === VIRTUAL_MODULE_ID) return RESOLVED_VIRTUAL_MODULE_ID;
+			return;
+		},
+		load: (id: string) => {
+			if (id === RESOLVED_VIRTUAL_MODULE_ID) return Router.generate(false);
+			return;
+		},
+	} satisfies PluginOption;
 }

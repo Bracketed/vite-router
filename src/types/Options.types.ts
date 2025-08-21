@@ -1,6 +1,6 @@
-import type { Route } from './Route.types';
+import type { VitePagesPluginRoute } from './Route.types';
 
-export interface Options {
+export interface VitePagesPluginOptions {
 	/**
 	 * Path to the app directory
 	 *
@@ -58,7 +58,7 @@ export interface Options {
 	redirects: Record<string, string>;
 
 	/** Called when the routes are generated */
-	onRoutesGenerated: (routes: Route[]) => void;
+	onRoutesGenerated: (routes: VitePagesPluginRoute[]) => void;
 
 	/**
 	 * Chooses the router to be used

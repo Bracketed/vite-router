@@ -3,7 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { Builders } from './builders';
-import type { Options, Route } from './types/Exports';
+
+import type { VitePagesPluginOptions } from './types';
+import type { VitePagesPluginRoute } from './types/Route.types';
 
 import { Logger } from './utilities/logger';
 import { Meta } from './utilities/meta';
@@ -18,16 +20,16 @@ function sanitise(RouteString: string): string {
 
 export class RouteGenerator {
 	private readonly builders: Builders = new Builders();
-	private readonly props: Options;
+	private readonly props: VitePagesPluginOptions;
 
-	private readonly routes: Route[] = [];
+	private readonly routes: VitePagesPluginRoute[] = [];
 	private readonly redirects: Record<string, string>;
 
 	private index: number = 0;
 
 	private readonly console = new Logger();
 
-	constructor(props: Options) {
+	constructor(props: VitePagesPluginOptions) {
 		this.props = props;
 		this.redirects = props.redirects;
 	}

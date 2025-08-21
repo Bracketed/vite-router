@@ -1,4 +1,4 @@
-import type { Options } from './types/Exports';
+import type { VitePagesPluginOptions } from './types';
 
 export class Builders {
 	public readonly file = (
@@ -7,7 +7,7 @@ export class Builders {
 		redirects: string[],
 		imports: string[],
 		useLazy: boolean,
-		options: Options
+		options: VitePagesPluginOptions
 	): string =>
 		`
 // @ts-nocheck
@@ -18,7 +18,7 @@ export class Builders {
 // https://www.npmjs.com/package/@bracketed/vite-plugin-router
 // https://github.com/bracketed/vite-router
 
-import type { Props } from '@bracketed/vite-plugin-router/types';
+import type { VitePagesPluginProps } from '@bracketed/vite-plugin-router/types';
 ${useLazy || options.suspense ? `import { ${useLazy ? 'lazy, Suspense' : 'Suspense'} } from 'react';` : ''}
 import { ${router}, Route, Routes } from 'react-router-dom';
 ${redirects.length > 0 ? "import { Redirect } from '@bracketed/vite-plugin-router';" : ''}
@@ -31,7 +31,7 @@ ${imports.length ? imports.join('\n') : ''}
  * @link https://www.npmjs.com/package/@bracketed/vite-plugin-router
  * @link https://github.com/bracketed/vite-router
  */
-export function AppRoutes(props: Props) {
+export function AppRoutes(props: VitePagesPluginProps) {
   return (
     <${router}>
       ${options.suspense === false ? '' : '<Suspense fallback={props.loadingPage || <div>Loading...</div>}>'}

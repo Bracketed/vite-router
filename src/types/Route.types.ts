@@ -1,5 +1,5 @@
 /** @internal */
-export interface Route {
+export interface VitePagesPluginRoute {
 	path: string;
 	route: string;
 	index: number;
