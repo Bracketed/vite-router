@@ -1,7 +1,8 @@
+import { cosmiconfigSync } from 'cosmiconfig';
+import path from 'node:path';
+
 export const isTypescript = (startDir: string) =>
-	require('cosmiconfig')
-		.cosmiconfigSync('tsconfig', {
-			searchPlaces: ['tsconfig.json', 'tsconfig.base.json', 'tsconfig.app.json', 'tsconfig.*.json'],
-			stopDir: require('node:path').parse(startDir).root,
-		})
-		.search(startDir);
+	cosmiconfigSync('tsconfig', {
+		searchPlaces: ['tsconfig.json', 'tsconfig.base.json', 'tsconfig.app.json', 'tsconfig.*.json'],
+		stopDir: path.parse(startDir).root,
+	}).search(startDir);
