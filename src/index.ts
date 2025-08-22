@@ -119,6 +119,8 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 				const code = await Router.generate(false);
 				const transformed = await transform(code, { loader: isTs ? 'tsx' : 'jsx' });
 
+				logger.info(transformed.code);
+
 				return transformed.code;
 			}
 			return;
