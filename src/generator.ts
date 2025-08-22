@@ -25,8 +25,6 @@ export class RouteGenerator {
 	private readonly routes: Array<VitePagesPluginRoute> = [];
 	private readonly redirects: Record<string, string>;
 
-	private index: number = 0;
-
 	private readonly console = new Logger();
 
 	constructor(props: VitePagesPluginOptions) {
@@ -39,18 +37,19 @@ export class RouteGenerator {
 			ignore: ['node_modules/**', ...this.props.ignore],
 		});
 
-		this.console.info(`${this.props.dir}/**/*.{${this.props.extensions.join(',')}}`);
+		this.routes.length = 0;
 
 		for (const filepath of files) {
 			let { name, ext, dir } = path.parse(filepath);
 
 			// full relative path without extension
-			const relative = write
-				? `./${path
-						.relative(path.resolve(this.props.root, this.props.base), filepath)
-						.slice(0, -ext.length)
-						.replaceAll('\\', '/')}`
-				: filepath.slice(0, -ext.length).replaceAll('\\', '/');
+			const relative = (
+				write ? `./${path.relative(path.resolve(this.props.root, this.props.base), filepath)}` : filepath
+			)
+				.slice(0, -ext.length)
+				.replaceAll('\\', '/');
+
+			this.console.info(relative);
 
 			const meta = new Meta({ metas: this.props.meta, path: filepath });
 
@@ -81,15 +80,14 @@ export class RouteGenerator {
 			this.routes.push({
 				route: route.toLowerCase().replace(/\[(.+?)\]/g, ':$1'), // this fixed some routes having incorrectly parsed params for some reason
 				path: relative.replace(/\/index$/, ''),
-				index: this.index++,
 				meta: meta.get('props'),
 			});
 		}
 
 		const imports =
 			this.props.router === 'HashRouter'
-				? this.routes.map((r) => this.builders.defaultImport(`R${r.index}`, r.path))
-				: this.routes.map((r) => this.builders.lazyImport(`R${r.index}`, r.path));
+				? this.routes.map((r, idx) => this.builders.defaultImport(`Page${idx}`, r.path))
+				: this.routes.map((r, idx) => this.builders.lazyImport(`Page${idx}`, r.path));
 
 		const redirects = Object.values(this.redirects).map((href, i) => {
 			const r = Object.keys(this.redirects)[i];
@@ -101,8 +99,8 @@ export class RouteGenerator {
 			});
 		});
 
-		const builtRoutes = this.routes.map((r) => {
-			const component = this.builders.component(`Page${r.index}`, r.meta);
+		const builtRoutes = this.routes.map((r, idx) => {
+			const component = this.builders.component(`Page${idx}`, r.meta);
 
 			return this.builders.component('Route', {
 				path: r.route,
