@@ -79,7 +79,7 @@ export class RouteGenerator {
 
 			this.routes.push({
 				route: route.toLowerCase().replace(/\[(.+?)\]/g, ':$1'), // this fixed some routes having incorrectly parsed params for some reason
-				path: relative.replace(/\/index$/, ''),
+				path: relative.replaceAll('\\', '/').replace('index', ''),
 				meta: meta.get('props'),
 			});
 		}
