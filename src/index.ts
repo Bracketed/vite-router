@@ -37,7 +37,6 @@ class ViteRouter {
 		props.dir = props.dir ? props.dir : `${props.base}/app`;
 
 		props.redirects ??= {};
-		props.router ??= 'BrowserRouter';
 		props.root ??= process.cwd();
 		props.suspense ??= false;
 
@@ -47,9 +46,6 @@ class ViteRouter {
 
 		// Makes sure the paths are absolute
 		props.dir = path.resolve(props.root, props.dir).replace(/\/+$/, '');
-
-		props.output ??= `${props.base}/Router.${isTypescript(props.root) ? 'tsx' : 'jsx'}`;
-		props.output = path.resolve(props.root, props.output).replace(/\/+$/, '');
 
 		props.onRoutesGenerated ??= () => void 0;
 
@@ -75,8 +71,6 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 		closeBundle: () => Router.watcher.close(),
 		configureServer: (server: ViteDevServer) => {
 			Router.watcher.on('all', () => {
-				Router.generate();
-
 				const mod: ModuleNode | undefined = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MODULE_ID);
 
 				if (mod && Router.configuration.reload) {
@@ -104,10 +98,6 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 
 			logger.info('Vite router is ready');
 			logger.info(`Watching at (${Router.configuration.dir})`);
-			Router.generate();
-		},
-		buildStart: () => {
-			Router.generate();
 		},
 
 		resolveId: (id: string) => {
@@ -116,7 +106,7 @@ function plugin(props: Partial<VitePagesPluginOptions> = {}) {
 		},
 		load: async (id: string) => {
 			if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-				const code = await Router.generate(false);
+				const code = await Router.generate();
 				const transformed = await transform(code, { loader: isTs ? 'tsx' : 'jsx' });
 
 				logger.info(transformed.code);

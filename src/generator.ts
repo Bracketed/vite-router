@@ -1,5 +1,4 @@
 import { glob } from 'glob';
-import fs from 'node:fs';
 import path from 'node:path';
 
 import { Builders } from './builders';
@@ -32,7 +31,7 @@ export class RouteGenerator {
 		this.redirects = props.redirects;
 	}
 
-	public readonly generate = async (write: boolean = true): Promise<string> => {
+	public readonly generate = async (): Promise<string> => {
 		const files = await glob(`${this.props.dir.replace(/\\/g, '/')}/**/*.{${this.props.extensions.join(',')}}`, {
 			ignore: ['node_modules/**', ...this.props.ignore],
 		});
@@ -42,15 +41,7 @@ export class RouteGenerator {
 		for (const filepath of files) {
 			let { name, ext, dir } = path.parse(filepath);
 
-			// full relative path without extension
-			const relative = (
-				write ? `./${path.relative(path.resolve(this.props.root, this.props.base), filepath)}` : filepath
-			)
-				.slice(0, -ext.length)
-				.replaceAll('\\', '/');
-
-			this.console.info(relative);
-
+			const relative = filepath.slice(0, -ext.length).replaceAll('\\', '/');
 			const meta = new Meta({ metas: this.props.meta, path: filepath });
 
 			if (meta.exists())
@@ -84,11 +75,7 @@ export class RouteGenerator {
 			});
 		}
 
-		const imports =
-			this.props.router === 'HashRouter'
-				? this.routes.map((r, idx) => this.builders.defaultImport(`Page${idx}`, r.path))
-				: this.routes.map((r, idx) => this.builders.lazyImport(`Page${idx}`, r.path));
-
+		const imports = this.routes.map((r, idx) => `const Page${idx} = lazy(() => import('${r.path}'));`);
 		const redirects = Object.values(this.redirects).map((href, i) => {
 			const r = Object.keys(this.redirects)[i];
 
@@ -109,24 +96,8 @@ export class RouteGenerator {
 			});
 		});
 
-		const content = this.builders.file(
-			this.props.router,
-			builtRoutes,
-			redirects,
-			imports,
-			this.props.router === 'BrowserRouter',
-			this.props,
-			write
-		);
-
-		if (this.props.output && this.props.write && write) fs.writeFileSync(this.props.output, content, 'utf-8');
-
 		this.props.onRoutesGenerated(this.routes);
-
-		this.console.info(
-			`Generated ${this.routes.length} routes ${write ? `at ${this.props.output}` : `(virtual module)`}`
-		);
-
-		return content;
+		this.console.info(`Generated ${this.routes.length} routes (virtual module)`);
+		return this.builders.file(builtRoutes, redirects, imports, this.props);
 	};
 }

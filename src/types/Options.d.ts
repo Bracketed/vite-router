@@ -23,20 +23,6 @@ export interface VitePagesPluginOptions {
 	base: string;
 
 	/**
-	 * Write the task output to an output file
-	 *
-	 * @default false
-	 */
-	write: boolean;
-
-	/**
-	 * Output path for the `routes` file.
-	 *
-	 * @default 'src/Routes.*'
-	 */
-	output: string;
-
-	/**
 	 * Match the file extensions to be used for the plugin
 	 *
 	 * @default ['.tsx', '.jsx']
@@ -59,13 +45,6 @@ export interface VitePagesPluginOptions {
 
 	/** Called when the routes are generated */
 	onRoutesGenerated: (routes: VitePagesPluginRoute[]) => void;
-
-	/**
-	 * Chooses the router to be used
-	 *
-	 * @default 'BrowserRouter'
-	 */
-	router: 'BrowserRouter' | 'HashRouter';
 
 	/**
 	 * Whether which way to reload the vModule
