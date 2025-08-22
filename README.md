@@ -48,12 +48,12 @@ npm install react-router react-router-dom
 Add to your `vite.config.js`:
 
 ```js
-import Routes from '@bracketed/vite-plugin-router';
+import { viteRouter } from '@bracketed/vite-plugin-router';
 
 export default {
 	plugins: [
 		// ...
-		new ViteRouter({ ... }),
+		viteRouter({ ... }),
 	],
 };
 ```
@@ -62,7 +62,7 @@ export default {
 
 By default, `@bracketed/vite-plugin-router` creates a route file in the `src/` directory containing all the route
 settings for your application, while observing the files within `src/app`, it is also accessible at runtime via Vite
-virtual modules at `virtual:vite-plugin-router`.
+virtual modules at `virtual:vite-plugin-router.{jsx or tsx}`.
 
 Routes are configured using the [Suspense API](https://react.dev/reference/react/Suspense) of `react-router` by default.
 
@@ -82,27 +82,13 @@ export default function Page() {
 }
 ```
 
-Run your application `npm run dev`, and you will be able to observe the `(VITE ROUTER)` logs and find the 'routes' file
-created.
-
-Add `AppRoutes` to your `main.tsx`:
+Run your application `npm run dev`, and you will be able to observe the `(VITE ROUTER)` logs and use it normally.
 
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 // ...
-import { AppRoutes } from './routes';
-
-ReactDOM.createRoot(document.body).render(<AppRoutes />);
-```
-
-Or alternatively,
-
-```js
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-// ...
-import { AppRoutes } from 'virtual:vite-plugin-router';
+import { AppRoutes } from 'virtual:vite-plugin-router.{jsx,tsx}';
 
 ReactDOM.createRoot(document.body).render(<AppRoutes />);
 ```
@@ -114,11 +100,11 @@ To use custom configuration, pass your options to Pages when instantiating the p
 ```js
 // vite.config.js
 import { defineConfig } from 'vite';
-import Routes from '@bracketed/vite-plugin-router';
+import { viteRouter } from '@bracketed/vite-plugin-router';
 
 export default defineConfig({
 	plugins: [
-		new ViteRouter({
+		viteRouter({
 			dir: 'src/app',
 			output: 'src',
 		}),
@@ -155,22 +141,6 @@ Dynamic routes are denoted using square brackets. Both directories and pages can
 
 - `src/app/users/[id].tsx` -> `/users/:id` (`/users/123`)
 - `src/app/users/[user]/settings.tsx` -> `/users/:user/settings` (`/users/123/settings`)
-
-### Layouts
-
-We can utilize 'layout' files to create nested layouts from the parent. By naming a specific file 'layout' and defining
-its child routes within it, we can establish a hierarchical structure for our application. This approach enhances the
-organization and management of routes, making it easier to maintain and extend the application.
-
-For example, this directory structure:
-
-```
-src/app/
-    ├── users/
-    │  ├── index.tsx
-    │  └── layout.tsx
-    └── index.tsx
-```
 
 ### Meta Files
 
