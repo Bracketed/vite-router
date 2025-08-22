@@ -1,7 +1,4 @@
-import chokidar, { FSWatcher } from 'chokidar';
 import { transformSync } from 'esbuild';
-import fs from 'node:fs';
-import path from 'node:path';
 import type { ModuleNode, PluginOption, ViteDevServer } from 'vite';
 
 import { RouteGenerator } from './generator';
@@ -13,11 +10,15 @@ import { Logger } from './utilities/logger';
 
 class ViteRouter {
 	public readonly configuration: VitePagesPluginOptions;
-	public readonly watcher: FSWatcher;
+	public readonly watcher: import('chokidar').FSWatcher;
 	public readonly generate: (write?: boolean) => string;
 
 	constructor(props: Partial<VitePagesPluginOptions> = {}) {
-		this.configuration = this.configureDefaults(props);
+		const fs = require('node:fs');
+		const path = require('node:path');
+		const chokidar = require('chokidar');
+
+		this.configuration = this.configureDefaults(props, path);
 		this.generate = new RouteGenerator(this.configuration).generate;
 
 		if (!fs.existsSync(this.configuration.dir)) throw new Error('ERR: The target directory does not exist');
@@ -31,7 +32,10 @@ class ViteRouter {
 		});
 	}
 
-	private readonly configureDefaults = (props: Partial<VitePagesPluginOptions>): VitePagesPluginOptions => {
+	private readonly configureDefaults = (
+		props: Partial<VitePagesPluginOptions>,
+		path: typeof import('node:path')
+	): VitePagesPluginOptions => {
 		// Defines default values
 		props.base ??= 'src';
 		props.dir = props.dir ? props.dir : `${props.base}/app`;

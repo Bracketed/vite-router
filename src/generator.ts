@@ -1,6 +1,3 @@
-import { globSync } from 'glob';
-import path from 'node:path';
-
 import { Builders } from './builders';
 
 import type { VitePagesPluginOptions } from './types';
@@ -32,6 +29,9 @@ export class RouteGenerator {
 	}
 
 	public readonly generate = (): string => {
+		const path = require('node:path');
+		const { globSync } = require('glob');
+
 		const files = globSync(`${this.props.dir.replace(/\\/g, '/')}/**/*.{${this.props.extensions.join(',')}}`, {
 			ignore: ['node_modules/**', ...this.props.ignore],
 		});

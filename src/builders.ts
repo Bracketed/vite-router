@@ -1,4 +1,5 @@
 import type { VitePagesPluginOptions } from './types';
+
 import { isTypescript } from './utilities/isTypescript';
 
 export class Builders {
