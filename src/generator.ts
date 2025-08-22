@@ -1,4 +1,4 @@
-import { glob } from 'glob';
+import { globSync } from 'glob';
 import path from 'node:path';
 
 import { Builders } from './builders';
@@ -31,8 +31,8 @@ export class RouteGenerator {
 		this.redirects = props.redirects;
 	}
 
-	public readonly generate = async (): Promise<string> => {
-		const files = await glob(`${this.props.dir.replace(/\\/g, '/')}/**/*.{${this.props.extensions.join(',')}}`, {
+	public readonly generate = (): string => {
+		const files = globSync(`${this.props.dir.replace(/\\/g, '/')}/**/*.{${this.props.extensions.join(',')}}`, {
 			ignore: ['node_modules/**', ...this.props.ignore],
 		});
 
