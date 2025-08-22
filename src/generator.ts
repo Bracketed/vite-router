@@ -45,10 +45,12 @@ export class RouteGenerator {
 			let { name, ext, dir } = path.parse(filepath);
 
 			// full relative path without extension
-			const relative = `./${path
-				.relative(path.resolve(this.props.root, this.props.base), filepath)
-				.slice(0, -ext.length)
-				.replaceAll('\\', '/')}`;
+			const relative = write
+				? `./${path
+						.relative(path.resolve(this.props.root, this.props.base), filepath)
+						.slice(0, -ext.length)
+						.replaceAll('\\', '/')}`
+				: filepath.slice(0, -ext.length).replaceAll('\\', '/');
 
 			const meta = new Meta({ metas: this.props.meta, path: filepath });
 
